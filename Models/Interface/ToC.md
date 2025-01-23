@@ -1,5 +1,29 @@
 # 界面问题
 
+- [INN: Interfaced Neural Networks as An Accessible Meshless Approach for Solving Interface PDE Problems](2021.01.18_INN.md)
+  - 日期: 2021-01-18
+  - 作者:
+    - 吴斯迪 (Sidi Wu) (中科院, 中国科学院大学) wsd@lsec.cc.ac.cn
+    - 卢本卓 (Benzhuo Lu) (中科院, 中国科学院大学) bzlu@lsec.cc.ac.cn
+  - [J.JCP.2022.111588](https://doi.org/10.1016/j.jcp.2022.111588)
+---
+- [A Discontinuity Capturing Shallow Neural Network for Elliptic Interface Problems](2021.06.10_DCSNN.md)
+  - 日期: 2021-06-10
+  - 作者:
+    - 胡伟帆 (Wei-Fan Hu) 教授 (国立中央大学) wfhu
+    - 林得勝 (Te-Sheng Lin) 教授 (阳明交通大学, 台湾大学)
+    - 赖明治 (Ming-Chih Lai) 教授 (阳明交通大学)
+  - [J.JCP.2022.111576](https://doi.org/10.1016/j.jcp.2022.111576)
+---
+- [Continuity-Preserved Deep Learning Method for Solving Elliptic Interface Problems](2024.03.24_CPM_Theory.md)
+  - 日期: 2024-03-24
+  - 作者:
+    - Jiao Li (长沙理工大学)
+    - Ran Bi (南京大学)
+    - Yaqi Xie (中南大学)
+    - 应金勇 (Jinyong Ying) 副教授 (中南大学)
+  - [Springer: Computational & Applied Mathematics](https://doi.org/10.1007/s40314-025-03090-5)
+---
 - [An Immersed Interface Neural Network for Elliptic Interface Problems](2024.03.30_IINN.md)
   - 日期: 2024-03-30
   - 作者:
