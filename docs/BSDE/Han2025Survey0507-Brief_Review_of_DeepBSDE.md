@@ -2,8 +2,10 @@
 
 - 标题: A Brief Review of the Deep BSDE Method for Solving High-Dimensional Partial Differential Equations
 - 作者: 韩劼群, Arnulf Jentzen, 鄂维南
+- 发表:
 - 预印: https://arxiv.org/abs/2505.17032v1
-- 时间: 2025-05-07T17:46:56
+- 代码:
+- 引用: [Han2025Survey0507]
 
 ## 摘要
 
@@ -162,7 +164,7 @@ The resulting network has a very natural **residual neural network** structure[^
 
 ---
 
-![](Images/DeepBSDE.png)
+![](../Images/DeepBSDE.png)
 
 Figure 1: Network architecture for solving parabolic PDEs.
 Each column corresponds to a subnetwork at time $ t = t_n $.
