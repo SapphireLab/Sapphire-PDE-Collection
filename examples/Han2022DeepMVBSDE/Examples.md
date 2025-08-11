@@ -97,7 +97,7 @@ $$
 
 ## 算例 1: 具有显式解的基准算例
 
-对于 $(X_t, Y_t, Z_t)$ 考虑如下 MV-FBSDEs:
+对于 $(X_t, Y_t, Z_t)\in \mathbb{H}^2(\mathbb{R}^d\times \mathbb{R}^p \times \mathbb{R}^{p\times q})$ 考虑如下 MV-FBSDEs:
 
 $$
 \begin{dcases}
@@ -111,8 +111,8 @@ $$
 - $X_t^i$: $d$ 维前向过程 $X_t$ 的第 $i$ 个分量;
 - $\mu_t=\mathcal{L}(X_t)$;
 - $\textcolor{blue}{m_t^Y}=\mathbb{E}[Y_t]$: **根据真解该值为 0**;
-- $p=1$;
-- $q=d$;
+- $p=1$: $Y_t$ 维度;
+- $q=d$: $Z_t$ 维度;
 - $\tilde{\mathbb{E}}$ 只和 $x_t'\sim\mu_t$ 有关;
 
 相应的解为：
@@ -169,5 +169,24 @@ $$
 - 结论:
   1. 在保持合适的计算成本增长下可以保持性能;
   2. 维度越大需要的虚拟博弈越多, 但增长并不剧烈.
+
+---
+
+### 个人补充
+
+给定真解 $Y_t$, 其期望 $m_t^Y = \mathbb{E}[Y_t]$ 的推导.
+
+由于 $X_t=W_t$, 所以 $m_t^Y = \sin(t + \dfrac{W_t^1 + \cdots + W_t^d}{\sqrt{d}})$.
+
+因为 $W_t$ 是标准布朗运动, 所以 $W_t^1,\cdots, W_t^d$ 都是独立同分布的正态随机变量, 均值为 $0$, 方差为 $t$.
+此时随机变量 $S_t = \sum_{i=1}^{d} W_t^i / \sqrt{d}$ 也是正态随机变量, 均值为 $0$, 方差为 $t$, 因此 $S_t$ 的概率密度函数 $S_t$ 是对称的.
+
+$$
+\mathbb{E}[\sin(t+S_t)] = \int_{-\infty}^{\infty} \sin(t+s) P(S_t) \text{d}s
+$$
+
+上式 $\sin(t+s)$ 关于 $s$ 是奇函数, 且 $P(S_t)$ 是偶函数, 因此积分值为 0.
+
+因此代码中 `mean_y_estimate` 始终取为 0.
 
 [^Germain2019Numerical]: [Numerical Resolution of McKean-Vlasov FBSDEs Using Neural Networks.](../../docs/BSDE/Germain2019Numerical.md)
