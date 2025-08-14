@@ -49,7 +49,7 @@ $$
 由于 $\mathcal{L}$ 未知, 结合虚拟博弈的思想, 将原问题转化为不动点迭代求解过程.
 每次迭代分为三步: 1. 更新经验状态分布; 2. 更新分布依赖函数; 3. 求解标准 FBSDEs.
 
-### 1. 更新经验状态分布
+### 1 更新经验状态分布
 
 在第 $(k)$ 次虚拟博弈迭代时, 根据前一次迭代解 $Y_0\approx u^{(k-1)}(0, X_0)$ 和 $Z_t\approx v^{(k-1)}(t,X_t)$, 和分布依赖函数 $\textcolor{red}{\hat{m}_1^{(k-1)}}$, $\textcolor{blue}{\hat{m}_2^{(k-1)}}$, $\textcolor{green}{\hat{m}_3^{(k-1)}}$, 通过 SDE 获得轨迹 $(\tilde{X}_t^{(k-1)}, Y_t^{(k-1)})$:
 
@@ -62,7 +62,7 @@ $$
 
 然后更新 $\textcolor{orange}{\mathcal{L}(\Theta_t)\approx \nu_t^{(k-1)} = \mathcal{L}(\tilde{\Theta}_t^{(k-1)})}$ 和 $\textcolor{purple}{\mathcal{L}(X_T)\approx \mu_T^{(k-1)} = \mathcal{L}(\tilde{X}_T^{(k-1)})}$.
 
-### 2. 更新分布依赖函数
+### 2 更新分布依赖函数
 
 上一步更新了 $\mathcal{L}(\Theta_t)$ 和 $\mathcal{L}(X_T)$, 固定该结果, 使用监督学习实现分布依赖函数的学习:
 
@@ -78,7 +78,7 @@ $$
 
 不采用神经网络近似时, 可以采用经验分布估计 (Monte Carlo) 获得估计, 不过非常耗时.
 
-### 3. 求解标准 FBSDEs
+### 3 求解标准 FBSDEs
 
 根据前一步的分布依赖函数求解标准 FBSDEs:
 
@@ -141,6 +141,8 @@ m_2 &= 0\\
 m_3 &= 0\\
 \end{aligned}
 $$
+
+注: 代码中 $m_1$ 由两部分实现, 第一部分期望由 `drift_model` 预测, 第二部分 $m_t^Y$ 的实现是单独更新 `mean_y_estimate` 变量.
 
 ### 实验 1
 
@@ -295,5 +297,67 @@ $$
 
 > $S_t\sim \mathcal{N}(0, t)$, $\mathbb{E}[e^{i\lambda S_t}] = \mathbb{E}[\cos(\lambda S_t)+i\sin(\lambda S_t)] = e^{-\dfrac{\lambda^2 t}{2}}$
 > 取 $\lambda = 1$ 的实部和虚部: $\mathbb{E}[\cos(S_t)]=\exp(-\dfrac{t}{2})$, $\mathbb{E}[\sin(S_t)]=0$.
+
+## 算例 2: Cucker-Smale 集群模型的平均场博弈
+
+考虑 Cucker-Smale 集群模型 (Flocking Model) 的平均场问题 39 40.
+Cucker-Smale 模型在建模和分析集群行为中十分重要, 集群行为是指一群自驱动个体所表现出的集体运动, 当个体数量非常庞大时, 很自然地会考虑其平均场极限系统.
+下面考虑 Cucker-Smale 模型的平均场博弈版本, 每个智能体通过选择自身的加速度, 来最小化加速成本以及位置和速度的偏差.
+
+通过以下过程定义代表性智能体动态:
+
+$$
+\begin{aligned}
+\text{d} x_t &= v_t \text{d} t,\\
+\text{d} v_t &= u_t \text{d} t + C \text{d} W_t,\\
+\end{aligned}
+$$
+
+- $x_t\in\mathbb{R}^n$: 智能体位置;
+- $v_t\in\mathbb{R}^n$: 智能体速度;
+- $u_t\in\mathbb{R}^n$: 加速度控制输入;
+- $W_t\in\mathcal{R}^p$: 布朗运动.
+
+智能体在可行的 $u_t$ 下最小化目标:
+$$
+\begin{aligned}
+&\mathbb{E} \int_0^T \|u_t\|_R^2 + \mathcal{C}(x_t,v_t;f_t)\text{d}t,\\
+&\mathcal{C}(x,v;f) = \| \int_{\mathbb{R}^{2n}} w(\| x-x'\|)(v'-v)f(x',v')\text{d}x' v'\|_Q^2\\
+&\qquad\qquad=\| \tilde{\mathbb{E}}_{(x',v')\sim f} [w(\|x-x'\|)(v'-v)]\|_Q^2.\\
+&w(x):=\dfrac{1}{(1+x^2)^{\beta}},\quad \beta\geq 0.
+\end{aligned}
+$$
+- 第一项为加速成本;
+- 第二项描述给定分布 $f_t$ 下智能体的位置偏差和速度偏差;
+- $Q, R$: 具有兼容维度的对称正定矩阵, 使得 $\|x\|_Q:= (x^{\mathsf{T}}Qx)^{1/2}$.
+
+使用**随机最大化原则 (Stochastic Maximization Principle)** 通过 MV-FBSDEs 刻画平均场均衡.
+为此, 定义 Hamiltonian $H$ 为:
+$$
+H(t,x,v,f,y,u) = (v^{\mathsf{T}}, u^{\mathsf{T}}) y + \mathcal{C}(x,v;f) + \|u\|_R^2,
+$$
+- $y\in \mathbb{R}^{2n}$
+
+$$
+\hat{u} = -\dfrac{1}{2} R^{-1} y_{n+1:2n}
+$$
+
+$$
+\begin{aligned}
+\partial_x H &= \partial_x \mathcal{C}(x,v;f)\\
+&=2\textcolor{red}{\tilde{\mathbb{E}}_{(x',v'\sim f)}[\partial_x w(\|x-x'\|)(v'-v)]^{\mathsf{T}}} Q \textcolor{blue}{\tilde{\mathbb{E}}_{(x',v'\sim f)}[w(\|x-x'\|)(v'-v)]} \\
+\partial_v H &= y_{1:n} + \partial_v \mathcal{C}(x,v;f)\\
+&= y_{1:n} + 2Q\textcolor{blue}{\tilde{\mathbb{E}}_{(x',v'\sim f)}[w(\|x-x'\|)(v'-v)]}\textcolor{green}{\tilde{\mathbb{E}}_{(x',v'\sim f)}[-w(\|x-x'\|)]} \\
+\end{aligned}
+$$
+
+通过随机最大化原则, $(\hat{u}_t, \hat{f}_t)_{0\leq t\leq T}$ 是 MFG 均衡当且仅当 $\hat{u}_t = -\dfrac{1}{2}R^{-1}Y_t^2$, $\hat{f}_t = \mathcal{L}(x_t,v_t)$, 且有如下 MV-FBSDEs:
+
+$$
+\begin{cases}
+\text{d} x_t = v_t \text{d} t,\text{d} v_t = -\dfrac{1}{2}R^{-1}Y_t^2\text{d}t + C\text{d}W_t, &(x_0, v_0)=\xi,\\
+\text{d} Y_t = -\begin{pmatrix}\partial_x H\\ \partial_v H\end{pmatrix}(t,x_t,v_t,\mathcal{L}(x_t,v_t), Y_t, \hat{u}_t)\text{d}t + Z_t\text{d}W_t, & Y_T = 0.
+\end{cases}
+$$
 
 [^Germain2019Numerical]: [Numerical Resolution of McKean-Vlasov FBSDEs Using Neural Networks.](../../docs/BSDE/Germain2019Numerical.md)
