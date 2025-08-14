@@ -242,7 +242,7 @@ $$
 \begin{aligned}
 \mathbb{E}_{x_t'}[e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}-\dfrac{\|x_t'\|^2}{d}}]
 &= \dfrac{1}{(1+2t/d)^{d/2}}\exp(\dfrac{t\|\dfrac{2W_t}{d}\|^2}{2(1+2t/d)})\\
-&= (\dfrac{d}{d+2t})^{d/2}\exp(\dfrac{dt\|\dfrac{2W_t}{d}\|^2}{2(d+2t)})\\
+&= (\dfrac{d}{d+2t})^{d/2}\exp(\dfrac{\text{d}t\|\dfrac{2W_t}{d}\|^2}{2(d+2t)})\\
 &= (\dfrac{d}{d+2t})^{d/2}\exp(\dfrac{2t\|W_t\|^2}{d(d+2t)})\\
 \end{aligned}
 $$
@@ -365,6 +365,68 @@ $$
 $$
 
 </details>
+
+#### $Y_t$ 真解验证
+
+设：
+$$
+S_t = \frac{\sum_{i=1}^d W_t^i}{\sqrt{d}}, \quad Y_t = \sin(t + S_t),\quad Z_t^i = \frac{1}{\sqrt{d}} \cos(t + S_t).
+$$
+
+首先对 $Y_t$ 应用 **Itô 公式**.
+
+$$
+\text{d}Y_t = \frac{\partial Y_t}{\partial t} \text{d}t + \frac{\partial Y_t}{\partial S_t} dS_t + \frac{1}{2} \frac{\partial^2 Y_t}{\partial S_t^2} (dS_t)^2
+$$
+
+计算各阶导数：
+1. 时间导数：
+   $$
+   \frac{\partial Y_t}{\partial t} = \cos(t + S_t)
+   $$
+2. 对 $S_t$ 的一阶导数：
+   $$
+   \frac{\partial Y_t}{\partial S_t} = \cos(t + S_t)
+   $$
+3. 对 $S_t$ 的二阶导数：
+   $$
+   \frac{\partial^2 Y_t}{\partial S_t^2} = -\sin(t + S_t)
+   $$
+4. $S_t$ 的微分：
+   $$
+   dS_t = \frac{1}{\sqrt{d}} \sum_{i=1}^d \text{d}W_t^i, \quad (dS_t)^2 = \frac{1}{d} \sum_{i=1}^d (\text{d}W_t^i)^2 = \text{d}t
+   $$
+
+代入 Itô 公式:
+$$
+\begin{aligned}
+\text{d}Y_t
+&= \cos(t + S_t) \text{d}t + \cos(t + S_t) \cdot \frac{1}{\sqrt{d}} \sum_{i=1}^d \text{d}W_t^i - \frac{1}{2} \sin(t + S_t) \text{d}t\\
+&= \left[ \cos(t + S_t) - \frac{1}{2} \sin(t + S_t) \right] \text{d}t + \cos(t + S_t) \cdot \frac{1}{\sqrt{d}} \sum_{i=1}^d \text{d}W_t^i\\
+&= \left[ \cos(t + S_t) - \frac{1}{2} \sin(t + S_t) \right] \text{d}t + \sum_{i=1}^d \frac{1}{\sqrt{d}}\cos(t + S_t) \cdot \text{d}W_t^i\\
+&= \left[ \cos(t + S_t) - \frac{1}{2} Y_t \right] \text{d}t + Z_t \cdot \text{d}W_t\\
+&= \left[\dfrac{d}{d}\dfrac{\sqrt{d}}{\sqrt{d}}\cos(t + S_t) - \frac{1}{2} Y_t \right] \text{d}t + Z_t \cdot \text{d}W_t\\
+&= \left[\dfrac{d}{d}\dfrac{\sqrt{d}}{\sqrt{d}}\cos(t + S_t) - \frac{1}{2} Y_t \right] \text{d}t + Z_t \cdot \text{d}W_t\\
+&= \left[\dfrac{\sqrt{d}}{d}\dfrac{d}{\sqrt{d}}\cos(t + S_t) - \frac{1}{2} Y_t \right] \text{d}t + Z_t \cdot \text{d}W_t\\
+&= \left[\dfrac{1}{\sqrt{d}}\sum_{i=1}^d Z_t^i - \frac{1}{2} Y_t \right] \text{d}t + Z_t \cdot \text{d}W_t\\
+\end{aligned}
+$$
+
+和原 BSDE 对比, 漂移项多了一部分
+
+$$
+\text{d}Y_t = \left[ \frac{Z_t^1 + \dots + Z_t^d}{\sqrt{d}} - \frac{Y_t}{2} + \textcolor{blue}{\sqrt{Y_t^2 + \|Z_t\|^2 + 1} - \sqrt{2}} \right] \text{d}t + Z_t \cdot \text{d}W_t
+$$
+
+$$
+\|Z_t\|^2 = \sum_{i=1}^d (Z_t^i)^2 = \sum_{i=1}^d \left( \frac{1}{\sqrt{d}} \cos(t + S_t) \right)^2 = \cos^2(t + S_t)
+$$
+
+$$
+\sqrt{Y_t^2 + \|Z_t\|^2 + 1} = \sqrt{\sin^2(t + S_t) + \cos^2(t + S_t) + 1} = \sqrt{2}
+$$
+
+综上给定的真解满足给定的方程.
 
 ## 算例 2: Cucker-Smale 集群模型的平均场博弈
 
