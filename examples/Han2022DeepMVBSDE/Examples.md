@@ -177,6 +177,8 @@ $$
 
 ### 个人补充
 
+#### $X_t$ 真解验证
+
 真解 $X_t$ 为 $W_t$, 因此相应的随机微分方程中的漂移项应为 0, 下面验证该结论.
 
 首先第一部分为:
@@ -193,20 +195,6 @@ $$
 $$
 e^{-\dfrac{\|X_t-x_t'\|^2}{d+2t}} = e^{-\dfrac{\|W_t\|^2}{d}}\cdot e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}}\cdot e^{-\dfrac{\|x_t'\|^2}{d}}
 $$
-<!--
-对于高斯随机变量 $x_t'^i\sim \mathcal{N}(0,t)$, 其特征函数为:
-$$
-\mathbb{E}[e^{i\lambda x_t'^i}] = e^{-\dfrac{t\lambda^2}{2}}
-$$
-推广到多变量和指数线性组合:
-$$
-\mathbb{E}[e^{\sum_{i=1}^d a_i x_t'^i}] = \exp(\dfrac{t}{2}\sum\limits_{i=1}^d a_i^2),\quad x_t'^i\ i.i.d.
-$$
-因此
-$$
-\mathbb{E}[e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}}] = \exp(\dfrac{t}{2}\sum_{i=1}^{d} (\dfrac{2 W_t^i}{d})^2) = \exp(\dfrac{2t}{d}\| W_t\|^2).
-$$ -->
-
 
 所以期望变为:
 $$
@@ -283,20 +271,100 @@ $$
 $$
 
 由 $Y_t = \sin(t + \dfrac{W_t^1 + \dots + W_t^d}{\sqrt{d}})$ 可得:
-设 $S_t=\dfrac{W_t^1 + \dots + W_t^d}{\sqrt{d}}$, 它服从均值为 $0$, 方差为 $t$ 的高斯分布, 则:
+设 $S_t=\dfrac{W_t^1 + \dots + W_t^d}{\sqrt{d}}$, 它服从均值为 $0$, 方差为 $t$ 的高斯分布 $S_t\sim \mathcal{N}(0, t)$, 则由高斯分布的特征函数可得:
+
+$\mathbb{E}[e^{i\lambda S_t}] = \mathbb{E}[\cos(\lambda S_t)+i\sin(\lambda S_t)] = e^{-\dfrac{\lambda^2 t}{2}}$
+
+取 $\lambda = 1$ 的实部和虚部: $\mathbb{E}[\cos(S_t)]=\exp(-\dfrac{t}{2})$, $\mathbb{E}[\sin(S_t)]=0$.
+
+所以
 $$
 \begin{aligned}
 \mathbb{E}[Y_t] &= \mathbb{E}[\sin(t+S_t)]\\
 &= \mathbb{E}[\sin (t)\cos(S_t) + \cos(t)\sin(S_t)]\\
 &= \sin(t)\mathbb{E}[\cos(S_t)] + \cos(t)\mathbb{E}[\sin(S_t)]\\
+&= \sin(t)\exp(-\dfrac{t}{2}) + \cos(t)0\\
+&= \sin(t)e^{-\dfrac{t}{2}}\\
 \end{aligned}
 $$
 
-由于奇函数积分为 0, 所以 $\mathbb{E}[\sin(S_t)]=0$;
-而由正态分布的特征函数, 所以 $\mathbb{E}[\cos(S_t)]=\exp(-\dfrac{t}{2})$.
+所以第二项的理论结果为 0.
 
-> $S_t\sim \mathcal{N}(0, t)$, $\mathbb{E}[e^{i\lambda S_t}] = \mathbb{E}[\cos(\lambda S_t)+i\sin(\lambda S_t)] = e^{-\dfrac{\lambda^2 t}{2}}$
-> 取 $\lambda = 1$ 的实部和虚部: $\mathbb{E}[\cos(S_t)]=\exp(-\dfrac{t}{2})$, $\mathbb{E}[\sin(S_t)]=0$.
+综上所述, 当 $X_t=W_t$ 时, 漂移项为 0, 满足方程.
+
+---
+
+<details>
+<summary>特征函数补充内容</summary>
+
+对于随机变量 $X$, 其特征函数 $\phi_X(\lambda)$ 定义为:
+$$
+\phi_X(\lambda) = \mathbb{E}\left[e^{i\lambda X}\right], \quad \lambda \in \mathbb{R}
+$$
+
+- 其中 $i$ 是虚数单位;
+- **特征函数是概率密度函数 (PDF)的傅里叶变换**.
+
+对于高斯分布情形, 设 $X \sim \mathcal{N}(\mu, \sigma^2)$, 其概率密度函数为:
+$$
+f_X(x) = \frac{1}{\sqrt{2\pi}\sigma} \exp(-\frac{(x-\mu)^2}{2\sigma^2})
+$$
+
+特征函数 $\phi_X(\lambda)$ 则为:
+$$
+\phi_X(\lambda) = \int_{-\infty}^{\infty} e^{i\lambda x} f_X(x) \, dx = \frac{1}{\sqrt{2\pi}\sigma} \int_{-\infty}^{\infty} e^{i\lambda x} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \, dx
+$$
+
+合并指数部分：
+$$
+i\lambda x - \frac{(x-\mu)^2}{2\sigma^2} = -\frac{x^2 - 2\mu x + \mu^2 - 2i\lambda x \sigma^2}{2\sigma^2}
+$$
+
+对 $x$ 配方：
+$$
+x^2 - 2(\mu + i\lambda \sigma^2)x + \mu^2 = \left(x - (\mu + i\lambda \sigma^2)\right)^2 - (\mu + i\lambda \sigma^2)^2 + \mu^2
+$$
+因此, 指数部分变为：
+$$
+-\frac{(x - (\mu + i\lambda \sigma^2))^2}{2\sigma^2} + \frac{(\mu + i\lambda \sigma^2)^2 - \mu^2}{2\sigma^2}
+$$
+
+特征函数可拆分为：
+$$
+\phi_X(\lambda) = \frac{1}{\sqrt{2\pi}\sigma} e^{\frac{(\mu + i\lambda \sigma^2)^2 - \mu^2}{2\sigma^2}} \int_{-\infty}^{\infty} e^{-\frac{(x - (\mu + i\lambda \sigma^2))^2}{2\sigma^2}} \, dx
+$$
+
+- **积分项**：是一个高斯积分（即使中心是复数）, 其值为 $\sqrt{2\pi}\sigma$（解析延拓保证）。
+- **常数项**：化简指数部分：
+  $$
+  \frac{(\mu + i\lambda \sigma^2)^2 - \mu^2}{2\sigma^2} = \frac{2i\lambda \mu \sigma^2 - \lambda^2 \sigma^4}{2\sigma^2} = i\lambda \mu - \frac{\lambda^2 \sigma^2}{2}
+  $$
+
+最后化简得到:
+$$
+\phi_X(\lambda) = e^{i\lambda \mu - \frac{\lambda^2 \sigma^2}{2}}
+$$
+
+---
+
+1. 零均值高斯分布 ($\mu = 0$)
+$$
+\phi_X(\lambda) = e^{-\frac{\lambda^2 \sigma^2}{2}}
+$$
+- **实部**：$\mathbb{E}[\cos(\lambda X)] = e^{-\frac{\lambda^2 \sigma^2}{2}}$
+- **虚部**：$\mathbb{E}[\sin(\lambda X)] = 0$（奇函数对称性）。
+
+2. 多维高斯分布 ($\mathbf{X} \sim \mathcal{N}(\mathbf{\mu}, \mathbf{\Sigma})$)
+$$
+\phi_{\mathbf{X}}(\boldsymbol{\lambda}) = e^{i\boldsymbol{\lambda}^T \mathbf{\mu} - \frac{1}{2} \boldsymbol{\lambda}^T \mathbf{\Sigma} \boldsymbol{\lambda}}
+$$
+
+3. 特征函数可以生成各阶矩。例如：
+$$
+\mathbb{E}[X^n] = \frac{1}{i^n} \left. \frac{d^n}{d\lambda^n} \phi_X(\lambda) \right|_{\lambda=0}
+$$
+
+</details>
 
 ## 算例 2: Cucker-Smale 集群模型的平均场博弈
 
