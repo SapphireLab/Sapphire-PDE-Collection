@@ -3,6 +3,7 @@
 ## 问题描述
 
 **McKean-Vlasov Forward Backward Stochastic Differential Equations (MV-FBSDEs)** 具有如下形式:
+
 $$
 \begin{cases}
 \text{d} X_t = b(t, \Theta_t, \mathcal{L}(\Theta_t)) \text{d} t + \sigma(t, \Theta_t, \mathcal{L}(\Theta_t)) \text{d} W_t,  &X_0 = x_0,  \\
@@ -100,17 +101,17 @@ $$
 对于 $(X_t, Y_t, Z_t)\in \mathbb{H}^2(\mathbb{R}^d\times \mathbb{R}^p \times \mathbb{R}^{p\times q})$ 考虑如下 MV-FBSDEs:
 
 $$
-\begin{dcases}
+\begin{cases}
 \text{d} X_t^i = \left[\sin(\textcolor{red}{\tilde{\mathbb{E}}_{x_t'\sim\mu_t} e^{-\dfrac{\|X_t- x_t'\|^2}{d}}} - e^{-\dfrac{\|X_t\|^2}{d+2t}}\Big(\dfrac{d}{d+2t}\Big)^\dfrac{d}{2})+ \dfrac{1}{2}(\textcolor{blue}{m_t^Y} - \sin(t) e^{-\dfrac{t}{2}}) \right]\text{d} t + \text{d} W_t^i, \\
 \text{d} Y_t = \left[\frac{Z_t^1 + \dots + Z_t^d}{\sqrt{d}}- \frac{Y_t}{2}+ \sqrt{Y_t^2 + \|Z_t\|^2 + 1}-\sqrt{2}\right]\text{d} t + Z_t\text{d} W_t, \\
 X_0^i = 0,\\
 Y_T = \sin(T + \dfrac{X_T^1 + \dots + X_T^d}{\sqrt{d}}),\\
-\end{dcases}
+\end{cases}
 $$
 
 - $X_t^i$: $d$ 维前向过程 $X_t$ 的第 $i$ 个分量;
 - $\mu_t=\mathcal{L}(X_t)$;
-- $\textcolor{blue}{m_t^Y}=\mathbb{E}[Y_t]$: **根据真解该值为 0**;
+- $\textcolor{blue}{m_t^Y}=\mathbb{E}[Y_t]$;
 - $p=1$: $Y_t$ 维度;
 - $q=d$: $Z_t$ 维度;
 - $\tilde{\mathbb{E}}$ 只和 $x_t'\sim\mu_t$ 有关;
@@ -118,9 +119,9 @@ $$
 相应的解为：
 $$
 \begin{aligned}
-X_t &= W_t;\\
-Y_t &= \sin(t + \dfrac{X_t^1 + \dots + X_t^d}{\sqrt{d}});\\
-Z_t &= \dfrac{1}{\sqrt{d}}\cos(t + \dfrac{X_t^1 + \dots + X_t^d}{\sqrt{d}})
+X_t &= W_t, \\
+Y_t &= \sin(t + \dfrac{X_t^1 + \dots + X_t^d}{\sqrt{d}}), \\
+Z_t^i &= \dfrac{1}{\sqrt{d}}\cos(t + \dfrac{X_t^1 + \dots + X_t^d}{\sqrt{d}})
 \end{aligned}
 $$
 
@@ -174,19 +175,125 @@ $$
 
 ### 个人补充
 
-给定真解 $Y_t$, 其期望 $m_t^Y = \mathbb{E}[Y_t]$ 的推导.
+真解 $X_t$ 为 $W_t$, 因此相应的随机微分方程中的漂移项应为 0, 下面验证该结论.
 
-由于 $X_t=W_t$, 所以 $m_t^Y = \sin(t + \dfrac{W_t^1 + \cdots + W_t^d}{\sqrt{d}})$.
-
-因为 $W_t$ 是标准布朗运动, 所以 $W_t^1,\cdots, W_t^d$ 都是独立同分布的正态随机变量, 均值为 $0$, 方差为 $t$.
-此时随机变量 $S_t = \sum_{i=1}^{d} W_t^i / \sqrt{d}$ 也是正态随机变量, 均值为 $0$, 方差为 $t$, 因此 $S_t$ 的概率密度函数 $S_t$ 是对称的.
-
+首先第一部分为:
 $$
-\mathbb{E}[\sin(t+S_t)] = \int_{-\infty}^{\infty} \sin(t+s) P(S_t) \text{d}s
+\sin(\textcolor{red}{\tilde{\mathbb{E}}_{x_t'\sim\mu_t} e^{-\dfrac{\|X_t- x_t'\|^2}{d}}} - e^{-\dfrac{\|X_t\|^2}{d+2t}}\Big(\dfrac{d}{d+2t}\Big)^\dfrac{d}{2})
 $$
 
-上式 $\sin(t+s)$ 关于 $s$ 是奇函数, 且 $P(S_t)$ 是偶函数, 因此积分值为 0.
+代入真解后 $\mu_t = \mathcal{L}(X_t) =\mathcal{N}(\mathbf{0}, t\mathbf{I}_d)$
+然后展开指数项:
+$$
+\|W_t-x_t'\|^2 = \sum_{i=1}^{d} (W_t^i-x_t'^i)^2 = \sum_{i=1}^{d}[(W_t^i)^2-2W_t^ix_t'^i+(x_t'^i)^2]
+$$
 
-因此代码中 `mean_y_estimate` 始终取为 0.
+$$
+e^{-\dfrac{\|X_t-x_t'\|^2}{d+2t}} = e^{-\dfrac{\|W_t\|^2}{d}}\cdot e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}}\cdot e^{-\dfrac{\|x_t'\|^2}{d}}
+$$
+<!--
+对于高斯随机变量 $x_t'^i\sim \mathcal{N}(0,t)$, 其特征函数为:
+$$
+\mathbb{E}[e^{i\lambda x_t'^i}] = e^{-\dfrac{t\lambda^2}{2}}
+$$
+推广到多变量和指数线性组合:
+$$
+\mathbb{E}[e^{\sum_{i=1}^d a_i x_t'^i}] = \exp(\dfrac{t}{2}\sum\limits_{i=1}^d a_i^2),\quad x_t'^i\ i.i.d.
+$$
+因此
+$$
+\mathbb{E}[e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}}] = \exp(\dfrac{t}{2}\sum_{i=1}^{d} (\dfrac{2 W_t^i}{d})^2) = \exp(\dfrac{2t}{d}\| W_t\|^2).
+$$ -->
+
+
+所以期望变为:
+$$
+\begin{aligned}
+\textcolor{red}{\tilde{\mathbb{E}}_{x_t'\sim\mu_t} e^{-\dfrac{\|X_t- x_t'\|^2}{d}}}
+&=\mathbb{E}_{x_t'}[e^{-\dfrac{\|W_t\|^2}{d}}\cdot e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}}\cdot e^{-\dfrac{\|x_t'\|^2}{d}}]\\
+&=e^{-\dfrac{\|W_t\|^2}{d}}\cdot \mathbb{E}_{x_t'}[e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}-\dfrac{\|x_t'\|^2}{d}}]\\
+\end{aligned}
+$$
+
+> 高斯线性变换积分公式:
+> $\mathbf{x}\sim \mathcal{N}(\mathbf{0},\sigma^2\mathbf{I}_d)$ 是 $d$ 维高斯随机变量, $\mathbf{a}\in \mathbb{R}^d$ 是常数变量, $b>0$ 是常数, 则下述期望有:
+$$
+\mathbb{E}_{\mathbf{x}}[e^{\mathbf{a}^{\mathsf{T}}\mathbf{x}-b\| \mathbf{x}\|^2}]=\dfrac{1}{(1+2b\sigma^2)^{d/2}}\exp(\dfrac{\sigma^2 \|\mathbf{a}\|^2}{2(1+2b\sigma^2)}).
+$$
+
+<details>
+<summary>推导</summary>
+$$
+p(\mathbf{x})=\dfrac{1}{(2\pi\sigma^2)^{d/2}}e^{-\dfrac{\|\mathbf{x}\|^2}{2\sigma^2}}
+$$
+>
+> $$
+\begin{aligned}
+\mathbb{E}[e^{\mathbf{a}^{\mathsf{T}}\mathbf{x}-b\| \mathbf{x}\|^2}] &= \int e^{\mathbf{a}^{\mathsf{T}}\mathbf{x}-b\| \mathbf{x}\|^2}p(\mathbf{x}) \text{d}\mathbf{x}\\
+&= \int \dfrac{1}{(2\pi\sigma^2)^{d/2}}e^{-\frac{\|\mathbf{x}\|^2}{2\sigma^2}} e^{\mathbf{a}^{\mathsf{T}}\mathbf{x}-b\| \mathbf{x}\|^2} \text{d}\mathbf{x}\\
+&= \dfrac{1}{(2\pi\sigma^2)^{d/2}} \int e^{\mathbf{a}^{\mathsf{T}}\mathbf{x}-b\| \mathbf{x}\|^2-\frac{\|\mathbf{x}\|^2}{2\sigma^2}} \text{d}\mathbf{x}\\
+&= \dfrac{1}{(2\pi\sigma^2)^{d/2}} \int e^{\mathbf{a}^{\mathsf{T}}\mathbf{x} + (-b -\frac{1}{2\sigma^2})\|\mathbf{x}\|^2} \text{d}\mathbf{x}\\
+&= \dfrac{1}{(2\pi\sigma^2)^{d/2}} \int e^{-(b+\frac{1}{2\sigma^2})\|\mathbf{x}\|^2+\mathbf{a}^{\mathsf{T}}\mathbf{x}} \text{d}\mathbf{x}\\
+&= \dfrac{1}{(2\pi\sigma^2)^{d/2}} \int e^{-(b+\frac{1}{2\sigma^2})\|\mathbf{x}-\frac{\mathbf{a}}{2(b+\frac{1}{2\sigma^2})}\|^2+\frac{\| \mathbf{a}\|^2}{4(b+\frac{1}{2\sigma^2})}} \text{d}\mathbf{x}\\
+&= \dfrac{1}{(2\pi\sigma^2)^{d/2}}e^{\frac{\| \mathbf{a}\|^2}{4(b+\frac{1}{2\sigma^2})}} \int e^{-(b+\frac{1}{2\sigma^2})\|\mathbf{x}-\frac{\mathbf{a}}{2(b+\frac{1}{2\sigma^2})}\|^2} \text{d}\mathbf{x}\\
+&= \dfrac{1}{(2\pi\sigma^2)^{d/2}}e^{\frac{\| \mathbf{a}\|^2}{4(b+\frac{1}{2\sigma^2})}} \cdot (\frac{2\pi}{2(b+\frac{1}{2\sigma^2})})^{d/2}\\
+&= \dfrac{1}{(2\pi\sigma^2)^{d/2}}e^{\frac{\sigma^2\| \mathbf{a}\|^2}{2(2b\sigma^2+1)}} \cdot (\frac{2\pi\sigma^2}{2b\sigma^2+1})^{d/2}\\
+&= \frac{1}{(1+2b\sigma^2)^{d/2}} \exp (\frac{\sigma^2\| \mathbf{a}\|^2}{2(1+2b\sigma^2)})
+\end{aligned}
+$$
+</details>
+
+因此:
+$$
+a = \dfrac{2W_t}{d}, b=\dfrac{1}{d}, \sigma^2=t
+$$
+所以结果为:
+$$
+\begin{aligned}
+\mathbb{E}_{x_t'}[e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}-\dfrac{\|x_t'\|^2}{d}}]
+&= \dfrac{1}{(1+2t/d)^{d/2}}\exp(\dfrac{t\|\dfrac{2W_t}{d}\|^2}{2(1+2t/d)})\\
+&= (\dfrac{d}{d+2t})^{d/2}\exp(\dfrac{dt\|\dfrac{2W_t}{d}\|^2}{2(d+2t)})\\
+&= (\dfrac{d}{d+2t})^{d/2}\exp(\dfrac{2t\|W_t\|^2}{d(d+2t)})\\
+\end{aligned}
+$$
+
+合并结果后为:
+$$
+\begin{aligned}
+\textcolor{red}{\tilde{\mathbb{E}}_{x_t'\sim\mu_t} e^{-\dfrac{\|X_t- x_t'\|^2}{d}}}
+&= e^{-\dfrac{\|W_t\|^2}{d}}\cdot \mathbb{E}_{x_t'}[e^{\dfrac{2W_t^{\mathsf{T}} x_t'}{d}-\dfrac{\|x_t'\|^2}{d}}]\\
+&= \exp(-\dfrac{\|W_t\|^2}{d}) (\dfrac{d}{d+2t})^{d/2}\exp(\dfrac{2t\|W_t\|^2}{d(d+2t)})\\
+&= (\dfrac{d}{d+2t})^{d/2}\exp(\dfrac{2t\|W_t\|^2-(d+2t)\|W_t\|^2}{d(d+2t)})\\
+&= (\dfrac{d}{d+2t})^{d/2}\exp(\dfrac{-\|W_t\|^2}{d+2t})\\
+\end{aligned}
+$$
+
+可以得到第一项的理论结果为 0.
+
+---
+
+第二部分为:
+$$
+\begin{aligned}
+\textcolor{blue}{m_t^Y} - \sin(t) e^{-\dfrac{t}{2}}
+&= \mathbb{E}[Y_t] - \sin(t) e^{-\dfrac{t}{2}}\\
+\end{aligned}
+$$
+
+由 $Y_t = \sin(t + \dfrac{W_t^1 + \dots + W_t^d}{\sqrt{d}})$ 可得:
+设 $S_t=\dfrac{W_t^1 + \dots + W_t^d}{\sqrt{d}}$, 它服从均值为 $0$, 方差为 $t$ 的高斯分布, 则:
+$$
+\begin{aligned}
+\mathbb{E}[Y_t] &= \mathbb{E}[\sin(t+S_t)]\\
+&= \mathbb{E}[\sin (t)\cos(S_t) + \cos(t)\sin(S_t)]\\
+&= \sin(t)\mathbb{E}[\cos(S_t)] + \cos(t)\mathbb{E}[\sin(S_t)]\\
+\end{aligned}
+$$
+
+由于奇函数积分为 0, 所以 $\mathbb{E}[\sin(S_t)]=0$;
+而由正态分布的特征函数, 所以 $\mathbb{E}[\cos(S_t)]=\exp(-\dfrac{t}{2})$.
+
+> $S_t\sim \mathcal{N}(0, t)$, $\mathbb{E}[e^{i\lambda S_t}] = \mathbb{E}[\cos(\lambda S_t)+i\sin(\lambda S_t)] = e^{-\dfrac{\lambda^2 t}{2}}$
+> 取 $\lambda = 1$ 的实部和虚部: $\mathbb{E}[\cos(S_t)]=\exp(-\dfrac{t}{2})$, $\mathbb{E}[\sin(S_t)]=0$.
 
 [^Germain2019Numerical]: [Numerical Resolution of McKean-Vlasov FBSDEs Using Neural Networks.](../../docs/BSDE/Germain2019Numerical.md)
