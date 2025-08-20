@@ -1,4 +1,4 @@
-# [DeepMVBSDE](../../docs/BSDE/Han2022DeepMVBSDE.md)
+# [DeepMVBSDE](../../docs/FBSDE/Han2022DeepMVBSDE.md)
 
 ## 问题描述
 
@@ -90,6 +90,18 @@ $$
 $$
 
 使用 DeepBSDE 或 DBDP 算法求解解函数 $Y_0 \approx u^{(k)}(0, X_0; \psi^{(k)})$ 和 $Z_t \approx v^{(k)}(t,X_t;\phi^{(k)})$.
+
+对时间区间 $[0,T]$ 引入 $N_T$ 个点的划分 $\pi$: $0=t_0<t_1<\cdots<t_{N_T}=T$, $\Delta t_i = t_{i+1}-t_i$.
+对于第 $(k-1)$ 次迭代, 为了更新第一步中的分布, 首先生成 $N$ 个起点 $X_0$ 和布朗运动 $W_t$ 进行前向仿真:
+
+$$
+\begin{aligned}
+X_{t_{i+1}}^{(k-1)} &= X_{t_i}^{(k-1)} + b(t_i, \Theta_{t_i}^{(k-1)}, \textcolor{red}{\hat{m}_1^{(k-1)}(t_i, X_{t_i}^{(k-1)})})\Delta t_i + \sigma(t_i, X_{t_i}^{(k-1)})\Delta W_{t_i}^{(k-1)},\\
+Y_{t_{i+1}}^{(k-1)} &= Y_{t_i}^{(k-1)} - h(t_i, \Theta_{t_i}^{(k-1)}, \textcolor{blue}{\hat{m}_2^{(k-1)}(t_i, X_{t_i}^{(k-1)})})\Delta t_i + v^{(k-1)}(t_i, X_{t_i}^{(k-1)})\Delta W_{t_i}^{(k-1)}.
+\end{aligned}
+$$
+
+
 
 ---
 
@@ -381,21 +393,21 @@ $$
 
 计算各阶导数：
 1. 时间导数：
-   $$
-   \frac{\partial Y_t}{\partial t} = \cos(t + S_t)
-   $$
+$$
+\frac{\partial Y_t}{\partial t} = \cos(t + S_t)
+$$
 2. 对 $S_t$ 的一阶导数：
-   $$
-   \frac{\partial Y_t}{\partial S_t} = \cos(t + S_t)
-   $$
+$$
+\frac{\partial Y_t}{\partial S_t} = \cos(t + S_t)
+$$
 3. 对 $S_t$ 的二阶导数：
-   $$
-   \frac{\partial^2 Y_t}{\partial S_t^2} = -\sin(t + S_t)
-   $$
+$$
+\frac{\partial^2 Y_t}{\partial S_t^2} = -\sin(t + S_t)
+$$
 4. $S_t$ 的微分：
-   $$
-   dS_t = \frac{1}{\sqrt{d}} \sum_{i=1}^d \text{d}W_t^i, \quad (dS_t)^2 = \frac{1}{d} \sum_{i=1}^d (\text{d}W_t^i)^2 = \text{d}t
-   $$
+$$
+dS_t = \frac{1}{\sqrt{d}} \sum_{i=1}^d \text{d}W_t^i, \quad (dS_t)^2 = \frac{1}{d} \sum_{i=1}^d (\text{d}W_t^i)^2 = \text{d}t
+$$
 
 代入 Itô 公式:
 $$
@@ -490,4 +502,4 @@ $$
 \end{cases}
 $$
 
-[^Germain2019Numerical]: [Numerical Resolution of McKean-Vlasov FBSDEs Using Neural Networks.](../../docs/BSDE/Germain2019Numerical.md)
+[^Germain2019Numerical]: [Numerical Resolution of McKean-Vlasov FBSDEs Using Neural Networks.](../../docs/FBSDE/Germain2019Numerical.md)
