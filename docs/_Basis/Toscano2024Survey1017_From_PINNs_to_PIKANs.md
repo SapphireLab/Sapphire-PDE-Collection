@@ -18,7 +18,7 @@
   - [Github]
   - [Demo]
 - 文件:
-  - [ArXiv](2410.13228v2.pdf)
+  - [ArXiv](../../PDF/综述/2410.13228v2.pdf)
   - [Publication] #TODO
 
 </details>
@@ -65,7 +65,7 @@ In contrast, [Lawal et al. [12]](2022.08.31_Physics-Informed_Neural_Network_(PIN
 
 The structure of the paper is shown schematically in Fig.01.
 
-![Figure 1: Overview of the Paper](Images/2024.10.17_Fig.01_Schematic.png)
+![Figure 1: Overview of the Paper](../_Images/2024.10.17_Fig.01_Schematic.png)
 
 - In [Section.02](#Section.02) we outline the general framework of Physics-Informed Machine Learning.
 - [Section.03](#Section.03) provides a comprehensive summary of the major techniques aimed at improving **PINNs**.
