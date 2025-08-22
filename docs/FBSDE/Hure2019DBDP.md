@@ -1719,3 +1719,31 @@ Average and standard deviation over $40$ independent runs for different numbers 
 
 \vspace{5mm} \small \printbibliography \end{document}
 
+## References
+
+[^Weinan2017deep]: 
+[^Pardoux1990adapted]: 
+[^Bouchard2004discrete]: 
+[^Gobet2005regression]: 
+[^Lemor2006rate]: 
+[^Henry2016branching]: 
+[^Warin2018nestingsMC]: 
+[^Warin2018monte]: 
+[^Chan2018machine]: 
+[^Hutetal18]: 
+[^Hutzenthaler2018overcoming]: 
+[^Han2017overcoming]: 
+[^Becketal19]: 
+[^Sirignano2018dgm]: 
+[^Becker]: 
+[^Hanlong18]: 
+[^Horetal89]: 
+[^Hor90universal]: 
+[^Elk97]: 
+[^Zhang04numerical]: 
+[^Avi09]: 
+[^Hutetal19]: 
+[^Balpag03]: 
+[^Boucha08]: 
+[^Jai1990variational]: 
+[^Bouchard2012monte]: 
