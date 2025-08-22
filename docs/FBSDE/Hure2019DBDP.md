@@ -1643,4 +1643,79 @@ Average and standard deviation observed over 10 independent runs are reported.
 
 The theoretical solution is $-0.2148861$. </a>
 
-#
+### Application to American options
+
+\label{sec:numeric3}
+
+Consider the stock price $X_t$ $=$ $(X^1_t, \dots , X^d_t)$ of $d$ assets with the following dynamics under the risk neutral probability measure: 
+
+$$
+dX_t^i = r X_t^i dt + \sigma_i X_t^i dW_t^i, 
+$$
+
+where $W_{.} = (W_{.}^1, \dots, W^d_{.})$ is a $d$-dimensional Brownian Motion, $\sigma = ( \sigma_1, \dots , \sigma_d) \in \R^d$, and $r$ is the risk-free rate.
+
+The value at time $t$ of an American option with payoff $g$ and maturity $T$ is given by: 
+\begin{flalign*} u(t,x) = \sup_{\tau \in {\cal T}_{t,T}} \E[ e^{-r \tau} g(X_{\tau})], \end{flalign*}
+where ${\cal T}_{t,T}$ is the set of stopping time with values in $[t,T]$, and is solution of the variational inequality 
+
+$$
+\left\{ 
+\begin{array}{rcl} \min \big[ -\partial_t u- \hat \Lc u , u -g \big] &=& 0, \;\;\; \mbox{ on } [0,T)\times (0,\infty)^d \\ u(T,.) &=& g, \hspace{1cm} \text{ on } (0,\infty)^d, \end{array}
+\right. 
+$$
+
+with 
+
+$$
+\begin{aligned}
+\hat \Lc u(t,x) & = \; \frac{1}{2} \sum_{i=1}^d \sigma_i^2 x_i^2 D^2_{x_i} u(t, x)+ r \sum_{i=1}^d x_i D_{x_i} u(t, x) - r u(t,x), 
+\end{aligned}
+$$
+
+as proved e.g. in [^Jai1990variational].
+
+Let us define the change of function $v$ by: $u(t,x)$ $=$ $e^{ r t} v(t, \log(x))$, (where $\log$ is applied component-wise), which is solution of the following variational inequality 
+
+$$
+\left\{ 
+\begin{array}{rcl} \min \left( -\partial_t v-\Lc v , v - \hat g \right) &=&0, \;\;\; \mbox{ on } [0,T)\times\R^d \\ \quad v(T,.) &=&\hat g, \hspace{1cm} \text{ on } \R^d, \end{array}
+\right. \label{eq:amSimp} 
+$$
+
+where $$\hat g(t,x) = e^{-r t} g(e^{x}) ,$$ $$ \Lc v = \frac{1}{2} \sum_{i=1}^d \sigma_i^2 D^2_{x_i} v_{ii} + \sum_{i=1}^d (r- \frac{1}{2}\sigma_i^2) D_{x_i} v_i.$$ In this section, we test the scheme described in section [sec:varIneq](#sec:varIneq) on \eqref{eq:amSimp} in the special case of a geometrical put with strike $K=1$ , $T=1$, $r=0.05$, $X_0^i=1$, $\sigma_i =0.2$ for $i=1$ to $d$, and payoff $(K- \prod_{i=1}^d X^i_t)_{+}$, as considered previously in [^Bouchard2012monte].
+
+In dimension $d$, the case boils down to the resolution of an American option in dimension $d$ $=$ $1$: indeed, the option payoff involving only the product of the asset values, it can be written as the payoff of a single asset with a trend equal to $d r$ and a volatility $\sigma_1 \sqrt{d}$, so that it can be very accurately estimated e.g. with a tree-based method.
+
+Results given in Table [tab:American](#tab:American) show that scheme \eqref{eq:schemeVI} is very accurate for the pricing of American options. 
+ |
+| Dimension | nb step | value | std | reference  |
+| 1 | 10 | 0.06047 | 0.00023 | 0.060903  |
+| 1 | 20 | 0.060789 | 0.00021 | 0.060903  |
+| 1 | 40 | 0.061122 | 0.00015 | 0.060903  |
+| 1 | 80 | 0.0613818 | 0.00019 | 0.060903  |
+| 5 | 10 | 0.10537 | 0.00014 | 0.10738  |
+| 5 | 20 | 0.10657 | 0.00011| 0.10738  |
+| 5 | 40 | 0.10725| 0.00012 | 0.10738  |
+| 5 | 80 | 0.107650 | 0.00016 | 0.10738  |
+| 10 | 10 | 0.12637 | 0.00014 | 0.12996  |
+| 10 | 20 | 0.128292 | 0.00011 | 0.12996  |
+| 10 | 40 | 0.12937 | 0.00014 | 0.12996  |
+| 10 | 80 | 0.129923 | 0.00016 | 0.12996  |
+| 20 | 10 | 0.1443 | 0.00014 | 0.1510  |
+| 20 | 20 | 0.147781 | 0.00012 | 0.1510  |
+| 20 | 40 | 0.149560 | 0.00012 | 0.1510  |
+| 20 | 80 | 0.15050 | 0.00010 | 0.1510  |
+| 40 | 10 | 0.15512 | 0.00018 | 0.1680  |
+| 40 | 20 | 0.16167 | 0.00015 | 0.1680  |
+| 40 | 40 | 0.16487 | 0.00011 | 0.1680  |
+| 40 | 80 | 0.16665 | 0.00013 | 0.1680  |
+| 40 | 160 | 0.16758 | 0.00016 | 0.1680  |
+<a id=tab:American>
+
+Estimates of the American option using RDBDP.
+
+Average and standard deviation over $40$ independent runs for different numbers of time steps are reported.</a>
+
+\vspace{5mm} \small \printbibliography \end{document}
+
