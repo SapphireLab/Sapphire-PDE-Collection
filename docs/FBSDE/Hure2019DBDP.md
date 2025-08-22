@@ -1374,3 +1374,24 @@ Combining with \eqref{estimBC}, this proves the error estimate \eqref{eq:theo3} 
 
 The error estimate \eqref{eq:theo3} for the $Z$-component is proved along the same arguments as in Step 5 in the proof of Theorem [theo:scheme1_1](#theo:scheme1_1), and is omitted here. \ep
 
+## 5·Numerical results
+
+\label{secnum}
+
+In the first two subsections, we compare our schemes DBDP1 \eqref{eq:scheme1}, DBDP2 \eqref{eq:scheme2} and the scheme proposed by [^Han2017overcoming] on some examples of PDEs and BSDEs.
+
+We first test our algorithms on some PDEs with bounded solutions and quite a simple structure (see section [sec:numeric1](#sec:numeric1)), and then try to solve some PDEs with unbounded solutions and more complex structures (see section [sec:numeric2](#sec:numeric2)).
+
+Our goal is to emphasize that solutions with simple structure easily represented by a neural network can be evaluated by our method even in very high-dimension, whereas the solution with complex structure can only be evaluated in moderate dimension.
+
+Finally, we apply the scheme described in section [sec:varIneq](#sec:varIneq) to an American option problem and show its accuracy in high dimension (see section [sec:numeric3](#sec:numeric3)).
+
+If not specified, we use in the sequel a fully connected feedforward network with two hidden layers, and $d+10$ neurons on each hidden layer, to implement our schemes \eqref{eq:scheme1} and \eqref{eq:scheme2}.
+
+We choose tanh as activation function for the hidden layers in order to avoid some explosion while calculating the numerical gradient $Z$ in scheme \eqref{eq:scheme2} and choose identity function as activation function for the output layer.
+
+We renormalize the data before entering the network.
+
+We use Adam Optimizer, implemented in TensorFlow and mini-batch with $1000$ trajectories for the stochastic gradient descent. 
+
+#
