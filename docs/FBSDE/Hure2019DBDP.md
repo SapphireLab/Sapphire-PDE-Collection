@@ -183,4 +183,72 @@ Z_t & = \; \sigma\trans(t,\Xc_t)D_x u(t,\Xc_t), \;\;\; 0 \leq t \leq T.
 \end{aligned}
 $$
 
+### The deep BSDE scheme of [^Han2017overcoming]
+
+The DBSDE algorithm proposed in [^Han2017overcoming], [^Weinan2017deep] starts from the BSDE representation \eqref{eqBSDE} of the solution to \eqref{eq:PDEInit}, but rewritten in forward form as: 
+
+$$
+\begin{aligned}
+\label{eq:bsde} u(t,\Xc_t) = & \;\; u(0, x_0)- \int_0^t f(s,\Xc_s,u(s,\Xc_s),\sigma\trans(s,\Xc_s)D_xu(s,\Xc_s)) \diff s \\ & \;\;\; + \int_0^t D_xu(s,\Xc_s)\trans\sigma(s,\Xc_s) \diff W_s, \;\;\;\;\; 0 \leq t \leq T. 
+\end{aligned}
+$$
+
+The forward process $\Xc$ in equation \eqref{eq:SDE}, when it is not simulatable, is numerically approximated by an Euler scheme $X$ $=$ $X^\pi$ on a time grid: $\pi$ $=$ $\{t_0=0<t_1< \ldots < t_N = T\}$, with modulus $|\pi|$ $=$ $\max_{i=0,\ldots,N-1}\Delta t_i$, $\Delta t_i$ $:=$ $t_{i+1}-t_i$, and defined as 
+
+$$
+
+X_{t_{i+1}} \; = \; X_{t_{i}} + \mu(t_i, X_{t_i}) \Delta t_{i} + \sigma(t_i, X_{t_i}) \Delta W_{t_i}, \;\;\; i=0,\ldots,N-1, \; X_0 = x_0, \label{eq:eulerSDE} 
+$$
+
+where we set $\Delta W_{t_i}$ $:=$ $W_{t_{i+1}} - W_{t_{i}}$.
+
+To alleviate notations, we omit the dependence of $X$ $=$ $X^\pi$ on the time grid $\pi$ as there is no ambiguity (recall that we use the notation $\Xc$ for the forward diffusion process).
+
+The approximation of equation \eqref{eq:PDEInit} is then given formally from the Euler scheme associated to the forward representation \eqref{eq:bsde} by 
+
+$$
+\begin{aligned}
+\label{uF} u(t_{i+1}, X_{t_{i+1}}) & \approx F(t_i,X_{t_i},u(t_i,X_{t_i}),\sigma\trans(t_i,X_{t_i})D_x u(t_{i}, X_{t_{i}}),\Delta t_{i},\Delta W_{t_i}) 
+\end{aligned}
+$$
+
+with 
+
+$$
+\begin{aligned}
+
+F(t,x,y,z,h,\Delta) & := y - f(t,x,y,z)h + z\trans\Delta. \label{defF} 
+\end{aligned}
+$$
+
+In [^Han2017overcoming], [^Weinan2017deep], the numerical approximation of $u(t_i,X_{t_i})$ is designed as follows: starting from an estimation $\Uc_0$ of $u(0,X_0)$, and then using at each time step $t_i$, $i$ $=$ $0,\ldots,N-1$, a multilayer neural network $x$ $\in$ $\R^d$ $\mapsto$ $\Zc_i(x;\theta_i)$ with parameter $\theta_i$ for the approximation of $x$ $\mapsto$ $\sigma\trans(t_i,x)D_x u(t_i,x)$: 
+
+$$
+\begin{aligned}
+\label{NNti} \Zc_i(x;\theta_i) & \approx \sigma\trans(t_i,x)D_x u(t_i,x), 
+\end{aligned}
+$$
+
+one computes estimations $\Uc_i$ of $u(t_i;X_{t_i})$ by forward induction via: 
+
+$$
+\begin{aligned}
+\Uc_{i+1} &= F(t_i,X_{t_i},\Uc_i,\Zc_i(X_{t_i};\theta_i),\Delta t_i,\Delta W_{t_i}), 
+\end{aligned}
+$$
+
+for $i$ $=$ $0,\ldots,N-1$.
+
+This algorithm forms a global deep neural network composed of the neural networks \eqref{NNti} of each period, by taking as input data (in machine learning language) the paths of $(X_{t_i})_{i=0,\ldots,N}$ and $(W_{t_i})_{i=0,\ldots,N}$, and giving as output $\Uc_N$ $=$ $\Uc_N(\theta)$, which is a function of the input and of the total set of parameters $\theta$ $=$ $(\Uc_0,\theta_0,\ldots,\theta_{N-1})$.
+
+The output aims to match the terminal condition $g(X_{t_N})$ of the BSDE, and one then optimizes over the parameter $\theta$ the expected square loss function: 
+
+$$
+\begin{aligned}
+\theta & \mapsto \; \E \big| g(X_{t_N}) - \Uc_N(\theta) \big|^2. 
+\end{aligned}
+$$
+
+This is obtained by stochastic gradient descent-type (SGD) algorithms relying on training input data. 
+
 #
