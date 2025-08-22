@@ -251,4 +251,99 @@ $$
 
 This is obtained by stochastic gradient descent-type (SGD) algorithms relying on training input data. 
 
+### New schemes: DBDP1 and DBDP2
+
+\label{secnewML}
+
+The proposed scheme is defined from a backward dynamic programming type relation, and has two versions: 
+
+- [(1)] First version: 
+\begin{itemize} 
+- [-] Initialize from an estimation $\widehat\Uc_N^{(1)}$ of $u(t_N,.)$ with $\widehat\Uc_N^{(1)}$ $=$ $g$ 
+- [-] For $i$ $=$ $N-1,\ldots,0$, given $\widehat\Uc_{i+1}^{(1)}$, use a pair of deep neural networks $(\Uc_i(.;\theta),\Zc_i(.;\theta))$ $\in$ $\Nc\Nc_{d,1,L,m}^\varrho(\R^{N_m})\times\Nc\Nc_{d,d,L,m}^\varrho(\R^{N_m})$ for the approximation of $(u(t_i,.),\sigma\trans(t_i,.)D_x u(t_i,.))$, and compute (by SGD) the minimizer of the expected quadratic loss function 
+
+$$
+\label{eq:scheme1} \left\{ 
+
+$$
+\begin{aligned}
+\hat L_i^{(1)}(\theta) & := \E \Big| \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) - F(t_i,X_{t_i},\Uc_i(X_{t_i};\theta),\Zc_i(X_{t_i};\theta),\Delta t_i,\Delta W_{t_i}) \Big|^2 \\ \theta_i^* & \in {\rm arg}\min_{\theta\in\R^{N_m}} \hat L_i^1(\theta). 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+Then, update: $\widehat\Uc_i^{(1)}$ $=$ $\Uc_i(.;\theta_i^*)$, and set $\widehat\Zc_i^{(1)}$ $=$ $\Zc_i(.;\theta_i^*)$. 
+
+- [(2)] Second version: 
+
+-  Initialize with $\widehat\Uc_N^{(2)}$ $=$ $g$ 
+-  For $i$ $=$ $N-1,\ldots,0$, given $\widehat\Uc_{i+1}^{(2)}$, use a deep neural network $\Uc_i(.;\theta)$ $\in$ $\Nc\Nc_{d,1,L,m}^\varrho(\Theta_m)$, and compute (by SGD) the minimizer of the expected quadratic loss function 
+
+$$
+\label{eq:scheme2} \left\{ 
+
+$$
+\begin{aligned}
+\hat L_i^{(2)}(\theta) & := \E \Big| \widehat\Uc_{i+1}^{(2)}(X_{t_{i+1}}) - \\ & \quad \quad F(t_i,X_{t_i},\Uc_i(X_{t_i};\theta),\sigma\trans(t_i,X_{t_i}) \hat D_x \Uc_i(X_{t_i};\theta),\Delta t_i,\Delta W_{t_i}) \Big|^2 \\ \theta_i^* & \in {\rm arg}\min_{\theta\in\Theta_m} \hat L_i^2(\theta), 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+where $\hat D_x \Uc_i(.;\theta)$ is the numerical differentiation of $\Uc_i(.;\theta)$.
+
+Then, update: $\widehat\Uc_i^{(2)}$ $=$ $\Uc_i(.;\theta_i^*)$, and set $\widehat\Zc_i^{(2)}$ $=$ $\sigma\trans(t_i,.) \hat D_x \Uc_i(.;\theta_i^*)$. 
+
+\end{itemize}
+
+\begin{Remark} \label{remNN} {\rm For the first version of the scheme, one can use independent neural networks, respectively for the approximation of $u(t_i,.)$ and for the approximation of $\sigma\trans(t_i,.)D_xu(t_i,.)$.
+
+In other words, the parameters are divided into a pair $\theta$ $=$ $(\xi,\eta)$ and we consider neural networks $\Uc_i(.;\xi)$ and $\Zc_i(.;\eta)$. } \ep \end{Remark}
+
+In the sequel, we refer to the first and second version of the new scheme above as DBDP1 and DBDP2, where the acronym DBDP stands for deep learning backward dynamic programming.
+
+The intuition behind DBDP1 and DBDP2 is the following.
+
+For simplicity, take $f$ $=$ $0$, so that $F(t,x,y,z,h,\Delta)$ $=$ $y+z\trans\Delta$.
+
+The solution $u$ to the PDE \eqref{eq:PDEInit} should then approximately satisfy (see \eqref{uF}) 
+
+$$
+\begin{aligned}
+u(t_{i+1}, X_{t_{i+1}}) & \approx \; u(t_i,X_{t_i}) + D_x u(t_i,X_{t_i})\trans \sigma(t_i,X_{t_i}) \Delta W_{t_i}. 
+\end{aligned}
+$$
+
+Consider the first scheme DBDP1, and suppose that at time $i+1$, $\widehat\Uc_{i+1}^{(1)}$ is an estimation of $u(t_{i+1,.})$.
+
+The quadratic loss function at time $i$ is then approximately equal to 
+
+$$
+\begin{aligned}
+\hat L_i^{(1)}(\theta) & \approx \; \E \Big| u(t_{i+1}, X_{t_{i+1}}) - \Uc_i(X_{t_i};\theta) - \Zc_i(X_{t_i};\theta)\trans\Delta W_{t_i} \Big|^2 \\ & \approx \; \E \Big[ \big| u(t_i,X_{t_i}) - \Uc_i(X_{t_i};\theta) \big|^2 + \Delta t_i \big| \sigma\trans(t_i,X_{t_i}) D_x u(t_i,X_{t_i}) - \Zc_i(X_{t_i};\theta) \big|^2 \Big]. 
+\end{aligned}
+$$
+
+Therefore, by minimizing over $\theta$ this quadratic loss function, via SGD based on simulations of $(X_{t_i},X_{t_{i+1}},\Delta W_{t_i})$ (called training data in the machine learning language), one expects the neural networks $\Uc_i$ and $\Zc_i$ to learn/approximate better and better the functions $u(t_i,.)$ and $\sigma\trans(t_i,)D_x u(t_i,)$ in view of the universal approximation theorem [^Hor90universal].
+
+Similarly, the second scheme DPDP2, which uses only neural network on the value functions, learns $u(t_i,.)$ by means of the neural network $\Uc_i$, and $\sigma\trans(t_i,)D_x u(t_i,)$ via $\sigma\trans(t_i,)\hat D_x \Uc_i$.
+
+The rigorous arguments for the convergence of these schemes will be derived in the next section. \vspace{2mm}
+
+The advantages of our two schemes, compared to the Deep BSDE algorithm, are the following: 
+
+-  by decomposing the global problem into smaller ones, we may expect to help the gradient descent method to provide estimations closer to the real solution.
+
+The memory needed in [^Han2017overcoming] can be a problem when taking too many time steps. 
+-  at each time step, we initialize the weights and bias of the neural network to the weights and bias of the previous time step treated : this trick is commonly used in iterative solvers of PDE, and allows us to start with a value close to the solution, hence avoiding local minima which are too far away from the true solution.
+
+Besides the number of gradient iterations to achieve is rather small after the first resolution step. 
+
+The small disadvantage is due to the Tensorflow structure.
+
+As it is done in python, the global graph creation takes much time as it is repeated for each time step and the global resolution is a little bit time consuming : as the dimension of the problem increases, the time difference decreases and it becomes hard to compare the computational time for a given accuracy when the dimension is above 5. 
+
 #
