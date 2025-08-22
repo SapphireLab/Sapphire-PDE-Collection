@@ -1019,4 +1019,358 @@ $$
 
 and thus, in theory, the error $\eps_{i,N}^{\Nc,m}$ can be made arbitrary small by suitable choices of large $m$ and $K$. \ep } \end{Remark}
 
-#
+### Convergence of RDBDP
+
+In this paragraph, we study the convergence of machine learning schemes for the variational inequality \eqref{eq:IQV}.
+
+We first consider the case when $f$ does not depend on $z$, so that the component $Y_t$ $=$ $u(t,\Xc_t)$ solution to the reflected BSDE \eqref{RBSDE} admits a Snell envelope representation, and we shall focus on the error on $Y$ by proposing an alternative to scheme \eqref{eq:schemeVI}, refereed to as RDBDPbis scheme, which only uses neural network for learning the function $u$: 
+
+-  Initialize $\widehat\Uc_N$ $=$ $g$ 
+-  For $i$ $=$ $N-1,\ldots,0$, given $\widehat\Uc_{i+1}$, use a deep neural network $\Uc_i(.;\theta)$ $\in$ $\Nc\Nc_{d,1,L,m}^\varrho(\R^{N_m})$, and compute (by SGD) the minimizer of the expected quadratic loss function 
+
+$$
+\label{eq:schemeVIbis} \left\{ 
+
+$$
+\begin{aligned}
+\bar L_i(\theta) & := \E \big| \widehat\Uc_{i+1}(X_{t_{i+1}}) - \Uc_i(X_{t_i};\theta) + f(t_i,X_{t_i},\Uc_i(X_{t_i};\theta)) \Delta t_i \big|^2 \\ \theta_i^* & \in {\rm arg}\min_{\theta\in\R^{N_m}} \bar L_i(\theta). 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+Then, update: $\widehat\Uc_i$ $=$ $\max\big[\Uc_i(.;\theta_i^*),g]$. 
+
+Let us also define from the scheme \eqref{eq:schemeVIbis} 
+
+$$
+\label{defV3} \left\{ 
+
+$$
+\begin{aligned}
+\tilde\Vc_{t_i} & := \; \E_i \big[ \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big] + f(t_i,X_{t_i},\tilde\Vc_{t_i}) \Delta t_i \; = \; \tilde v_i(X_{t_i}), \\ \widehat\Vc_{t_i} & := \; \max[\tilde\Vc_{t_i} ; g(X_{t_i}) ], \;\;\; i =0,\ldots,N-1. 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+Our next result gives an error estimate of the scheme \eqref{eq:schemeVIbis} in terms of the $L^2$-approximation errors of $\tilde v_i$ by neural networks $\Uc_i$, $i=0,\ldots,N-1$, and defined as 
+
+$$
+\begin{aligned}
+\tilde\eps_i^{\Nc} & := \; \inf_{\theta\in\R^{N_m}} \E \big|\tilde v_i(X_{t_i}) - \Uc_i(X_{t_i};\theta) \big|^2. 
+\end{aligned}
+$$
+
+\begin{Theorem} \emph{(Case $f$ independent of $z$: Consistency of RDBDPbis)} \label{theo:scheme3bis}
+
+Let Assumption {\bf (H1)} hold, with $g$ Lipschitz.
+
+Then, there exists a constant $C>0$, independent of $\pi$, such that 
+
+$$
+\begin{aligned}
+\max_{i=0,\ldots,N-1} \big\| Y_{t_i} - \hat\Uc_i(X_{t_i}) \big\|_{_2} & \leq \; C \Big( |\pi|^{\frac{1}{2}} + \sum_{i=0}^{N-1} \sqrt{\tilde \eps_i^{\Nc}} \Big), \label{eq:theo3bis} 
+\end{aligned}
+$$
+
+where $\|.\|_{_2}$ is the $L^2$-norm on $(\Omega,\Fc,\P)$. \end{Theorem}
+
+\begin{Remark} \label{rem:estimRDBDP} {\rm The estimation \eqref{eq:theo3bis} implies that 
+
+$$
+\begin{aligned}
+\max_{i=0,\ldots,N-1} \E\big| Y_{t_i} - \hat\Uc_i(X_{t_i}) \big|^2 & \leq \; C \Big( |\pi| + N \sum_{i=0}^{N-1} \tilde \eps_i^{\Nc} \Big), \label{eq:theo3_scheme3} 
+\end{aligned}
+$$
+
+which is of the same order than the error estimate in Theorem [theo:scheme1_1](#theo:scheme1_1) when $g$ is Lipschitz. } \ep \end{Remark}
+\noindent {\bf Proof.}
+
+Let us introduce the discrete-time approximation of the reflected BSDE 
+
+$$
+\label{defYpi} \left\{ 
+
+$$
+\begin{aligned}
+
+Y_{t_N}^\pi & = \; g(X_{t_N}) \\ \tilde Y_{t_i}^\pi & = \; \E_i[ Y_{t_{i+1}}^\pi ] + f(t_i,X_{t_i},\tilde Y_{t_i}^\pi) \Delta t_i \\ Y_{t_i}^\pi & = \; \max \big[ \tilde Y_{t_i}^\pi ; g(X_{t_i}) \big] , \;\;\; i =0,\ldots,N-1. 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+It is known, see [^Balpag03], [^Bouchard2004discrete] that 
+
+$$
+\begin{aligned}
+\label{estimRBSDE} \max_{i=0,\ldots,N-1} \big\| Y_{t_i} - Y_{t_i}^\pi \big\|_{_2} & = \; O(|\pi|^{\frac{1}{2}}). 
+\end{aligned}
+$$
+
+Fix $i$ $=$ $0,\ldots,N-1$.
+
+From \eqref{defV3}, \eqref{defYpi}, we have 
+
+$$
+\begin{aligned}
+| \tilde Y_{t_i}^\pi - \tilde\Vc_{t_i} | & \leq \; \E_i \big| Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big| + \Delta t_i \big| f(t_i,X_{t_i},\tilde Y_{t_i}^\pi) - f(t_i,X_{t_i},\tilde\Vc_{t_i}) \big| \\ & \leq \; \E_i \big| Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big| + [f]_{_L} \Delta t_i | \tilde Y_{t_i}^\pi - \tilde\Vc_{t_i} |, 
+\end{aligned}
+$$
+
+from the Lipschitz condition on $f$ in {\bf (H1)}, and then for $|\pi|$ small enough 
+
+$$
+\begin{aligned}
+\big\| \tilde Y_{t_i}^\pi - \tilde\Vc_{t_i} \big\|_{_2} & \leq \; (1 + C |\pi|) \big\| Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big\|_{_2}. 
+\end{aligned}
+$$
+
+By Minkowski inequality, this yields for all $\theta$ 
+
+$$
+\begin{aligned}
+\label{YVxi} \big\| \tilde Y_{t_i}^\pi - \Uc_{i}^{}(X_{t_{i}};\theta) \big\|_{_2} & \leq \; (1 + C |\pi|) \big\| Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big\|_{_2} + \big\| \tilde\Vc_{t_i} - \Uc_{i}^{}(X_{t_{i}};\theta) \big\|_{_2}. 
+\end{aligned}
+$$
+
+On the other hand, by the martingale representation theorem, there exists an $\R^d$-valued square integrable process $(\tilde Z_t)_t$ such that 
+
+$$
+\begin{aligned}
+\label{FBSDE3} \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) & = \; \tilde\Vc_{t_i} - f(t_i,X_{t_i},\tilde\Vc_{t_i}) \Delta t_i + \int_{t_i}^{t_{i+1}} \tilde Z_s\trans \diff W_s, 
+\end{aligned}
+$$
+
+and the expected squared loss function of the DBDP3 scheme can be written as 
+
+$$
+\begin{aligned}
+\label{LtildeL3} \bar L_i^{}(\theta) &= \; \tilde L_i(\theta) + \E \Big[ \int_{t_i}^{t_{i+1}} \big| \tilde Z_t \big|^2 \diff t \Big] 
+\end{aligned}
+$$
+
+with 
+
+$$
+\begin{aligned}
+\sqrt{ \tilde L_i(\theta) } & := \; \Big\| \tilde\Vc_{t_i} - \Uc_i(X_{t_i};\theta) + \big( f(t_i,X_{t_i},\Uc_i(X_{t_i};\theta)) - f(t_i,X_{t_i},\tilde\Vc_{t_i}) \big) \Delta t_i \Big\|_{_2}. 
+\end{aligned}
+$$
+
+From the Lipschitz condition on $f$, and by Minkowski inequality, we have for all $\theta$ 
+\begin{eqnarray*} (1 - [f]_{_L} \Delta t_i) \big\| \tilde\Vc_{t_i} - \Uc_i(X_{t_i};\theta) \big\|_{_2} & \leq & \sqrt{\tilde L_i(\theta)} \; \leq \; (1 + [f]_{_L} \Delta t_i) \big\| \tilde \Vc_{t_i} - \Uc_i(X_{t_i};\theta) \big\|_{_2}. \end{eqnarray*}
+
+Take now $\theta_i^*$ $\in$ ${\rm arg}\min_\theta \bar L_i(\theta)$ $=$ ${\rm arg}\min_\theta \tilde L_i(\theta)$.
+
+Then, from the above relations, we have 
+\begin{eqnarray*} (1 - [f]_{_L} \Delta t_i) \big\| \tilde\Vc_{t_i} - \Uc_i(X_{t_i};\theta_i^*) \big\|_{_2} & \leq & (1 + [f]_{_L} \Delta t_i) \big\| \tilde \Vc_{t_i} - \Uc_i(X_{t_i};\theta) \big\|_{_2}, \end{eqnarray*}
+for all $\theta$, and so 
+
+$$
+\begin{aligned}
+\label{VUxi} \big\| \tilde\Vc_{t_i} - \Uc_i(X_{t_i};\xi_i^*) \big\|_{_2} & \leq \; (1 + C|\pi|) \sqrt{ \tilde\eps_i^{\Nc} }. 
+\end{aligned}
+$$
+
+By taking $\theta$ $=$ $\theta_i^*$ in \eqref{YVxi}, recalling that $\widehat\Uc_i(X_{t_i})$ $=$ $\max[\Uc_i(X_{t_i};\theta_i^*); g(X_{t_i})]$, $Y_{t_i}^\pi$ $=$ $\max[\tilde Y_{t_i}^\pi;g(X_{t_i})]$, and since $|\max(a,c) - \max(b,c)|$ $\leq$ $|a-b|$, we obtain by using \eqref{VUxi} 
+
+$$
+\begin{aligned}
+\big\| Y_{t_i}^\pi - \widehat \Uc_{i}^{}(X_{t_{i}}) \big\|_{_2} & \leq \; (1 + C |\pi|) \Big( \big\| Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big\|_{_2} + \sqrt{ \tilde\eps_i^{\Nc} } \Big). 
+\end{aligned}
+$$
+
+By induction, this yields 
+
+$$
+\begin{aligned}
+\max_{i=0,\ldots,N-1} \big\| Y_{t_i}^\pi - \widehat \Uc_{i}^{}(X_{t_{i}}) \big\|_{_2} & \leq \; C \sum_{i=0}^{N-1} \sqrt{ \tilde\eps_i^{\Nc} }, 
+\end{aligned}
+$$
+
+and we conclude with \eqref{estimRBSDE}. \ep \vspace{5mm}
+
+We finally turn to the general case when $f$ may depend on $z$, and study the convergence of the RDBDP scheme \eqref{eq:schemeVI} towards the variational inequality \eqref{eq:IQV} related to the solution $(Y,Z)$ of the reflected BSDE \eqref{RBSDE} by showing an error estimate for 
+
+$$
+\begin{aligned}
+\Ec\big[(\widehat\Uc^{},\widehat\Zc^{}),(Y,Z)\big] & := \; \max_{i=0,\ldots,N-1} \E \big|Y_{t_i}- \widehat\Uc_i^{}(X_{t_i})\big|^2 + \E \bigg[ \sum_{i=0}^{N-1} \int_{t_i}^{t_{i+1}} \big| Z_t - \widehat\Zc_i^{}(X_{t_i}) \big|^2 dt \bigg]. 
+\end{aligned}
+$$
+
+Let us define from the scheme \eqref{eq:schemeVI} 
+
+$$
+\label{defVZ3} \left\{ 
+
+$$
+\begin{aligned}
+\tilde\Vc_{t_i} & := \; \E_i \big[ \widehat\Uc_{i+1}(X_{t_{i+1}}) \big] + f(t_i,X_{t_i},\tilde\Vc_{t_i},\overline{{\tilde Z_{t_i}}}) \Delta t_i \; = \; \tilde v_i(X_{t_i}), \\ \overline{{\tilde Z_{t_i}}} & := \; \frac{1}{\Delta t_i} \E_i\left[ \widehat\Uc_{i+1}(X_{t_{i+1}}) \Delta W_{t_i} \right] \; = \; \tilde z_i(X_{t_i}), \\ \widehat\Vc_{t_i} & := \; \max[\tilde\Vc_{t_i} ; g(X_{t_i}) ], \;\;\; i =0,\ldots,N-1. 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+Our final main result gives an error estimate of the RDBDP scheme in terms of the $L^2$-approximation errors of $\tilde v_i$ and $\tilde z_i$ by neural networks $\Uc_i$ and $\Zc_i$, $i=0,\ldots,N-1$, assumed to be independent (see Remark [remNN](#remNN)), and defined as 
+
+$$
+\begin{aligned}
+\eps_i^{\Nc,\tilde v} \; := \; \inf_{\xi} \E \big|\tilde v_i(X_{t_i}) - \Uc_i(X_{t_i};\xi) \big|^2, \hspace{7mm} \eps_i^{\Nc,\tilde z} \; := \; \inf_{\eta} \E\big|\tilde z_i(X_{t_i}) - \Zc_i(X_{t_i};\eta) \big|^2. 
+\end{aligned}
+$$
+
+The result is obtained under one of the following additional assumptions \vspace{2mm} \noindent {\bf (H3)} $g$ is $C^1$, and $g$, $D_x g$ are Lipschitz. or \noindent {\bf (H4)} $\sigma$ is $C^1$, with $\sigma$, $D_x \sigma$ both Lipschitz, and $g$ is $C^2$, with $g$, $D_x g$, $D_x^2 g$ all Lipschitz. 
+\begin{Theorem} \emph{(Consistency of RDBDP)} \label{theo:scheme3}
+
+Let Assumption {\bf (H1)} hold.
+
+There exists a constant $C>0$, independent of $\pi$, such that 
+
+$$
+\begin{aligned}
+\Ec\big[(\widehat\Uc^{},\widehat\Zc^{}),(Y,Z)\big] & \leq \; C \Big( \eps(\pi) + \sum_{i=0}^{N-1} \big(N \eps_i^{\Nc,\tilde v} + \eps_i^{\Nc,\tilde z}\big) \Big), \label{eq:theo3} 
+\end{aligned}
+$$
+
+with $\eps(\pi)$ $=$ $O(|\pi|^{\frac{1}{2}})$ under {\bf (H3)}, and $\eps(\pi)$ $=$ $O(|\pi|)$ under {\bf (H4)}. \end{Theorem}
+\noindent {\bf Proof.}
+
+Let us introduce the discrete-time approximation of the reflected BSDE 
+
+$$
+\label{defYZpi} \left\{ 
+
+$$
+\begin{aligned}
+
+Y_{t_N}^\pi & = \; g(X_{t_N}) \\ Z_{t_i}^\pi &= \; \frac{1}{\Delta t_i} \E_i \big[ Y_{t_{i+1}}^\pi \Delta W_{t_i} \big], \\ \tilde Y_{t_i}^\pi & = \; \E_i[ Y_{t_{i+1}}^\pi ] + f(t_i,X_{t_i},\tilde Y_{t_i}^\pi,Z_{t_i}^\pi) \Delta t_i \\ Y_{t_i}^\pi & = \; \max \big[ \tilde Y_{t_i}^\pi ; g(X_{t_i}) \big] , \;\;\; i =0,\ldots,N-1. 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+It is known from [^Boucha08] that 
+
+$$
+\label{estimBC} \left\{ 
+
+$$
+\begin{aligned}
+\max_{i=0,\ldots,N-1} \E \big| Y_{t_i} - Y_{t_i}^\pi \big|^2 & = \; \eps(\pi) \\ \E \bigg[ \sum_{i=0}^{N-1} \int_{t_i}^{t_{i+1}} \big| Z_t - Z_{t_i}^\pi \big|^2 dt \bigg] & = \; O(|\pi|^{\frac{1}{2}}), 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+with $\eps(\pi)$ $=$ $O(|\pi|^{\frac{1}{2}})$ under {\bf (H3)}, and $\eps(\pi)$ $=$ $O(|\pi|)$ under {\bf (H4)}. \vspace{1mm}
+
+Fix $i$ $=$ $0,\ldots,N-1$.
+
+By writing that 
+
+$$
+\begin{aligned}
+\tilde Y_{t_i}^\pi - \tilde\Vc_{t_i} & = \E_i\big[ Y_{t_{i+1}} - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big] + \Delta t_i \Big( f(t_i,X_{t_i},\tilde Y_{t_i}^\pi,Z_{t_i}^\pi) - f(t_i,X_{t_i},\tilde\Vc_{t_i},\overline{{\tilde Z_{t_i}}}) \Big), 
+\end{aligned}
+$$
+
+and proceeding similarly as in Step 1 in the proof of Theorem [theo:scheme1_1](#theo:scheme1_1), we have by Young inequality and Lipschitz condition on $f$ 
+
+$$
+\begin{aligned}
+\E\big| \tilde Y_{t_i}^\pi - \tilde\Vc_{t_i} \big|^2 & \leq \; (1 +\gamma\Delta t_i) \E \Big| \E_i\big[ Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big] \Big|^2 \\ & \;\;\; + 2 \frac{[f]^2_{_L}}{\gamma} \big(1+ \gamma \Delta t_i\big) \Big\{ \Delta t_i \E \big| \tilde Y_{t_i}^\pi - \tilde\Vc_{t_i} \big|^2 + \Delta t_i \E \big| Z_{t_i}^\pi - \overline{{\tilde Z_{t_i}}} \big|^2 \Big\}. \label{Ypiinter} 
+\end{aligned}
+$$
+
+From \eqref{defVZ3}, \eqref{defYZpi}, Cauchy-Schwarz inequality, and law of iterated conditional expectations, we have similarly as in Step 1 in the proof of Theorem [theo:scheme1_1](#theo:scheme1_1): 
+
+$$
+\begin{aligned}
+\Delta t_i \E \big| Z_{t_i}^\pi - \overline{{\tilde Z_{t_i}}} \big|^2& \leq \; 2 d \Big( \E \big|Y_{t_{i+1}}^\pi- \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big|^2 - \E \Big| \E_i\big[ Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}})\big] \Big|^2 \Big). 
+\end{aligned}
+$$
+
+Then, by plugging into \eqref{Ypiinter} and choosing $\gamma$ $=$ $4 d [f]^2_{_L}$, we have for $|\pi|$ small enough: 
+
+$$
+\begin{aligned}
+\E\big| \tilde Y_{t_i}^\pi - \tilde\Vc_{t_i} \big|^2 & \leq \; (1 + C |\pi|) \E \big|Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big|^2. 
+\end{aligned}
+$$
+
+Next, by using Young inequality as in Step 2 in the proof of Theorem [theo:scheme1_1](#theo:scheme1_1), we obtain for all $\theta$ $=$ $(\xi,\zeta)$: 
+
+$$
+\begin{aligned}
+\label{tildeYU} \hspace{-5mm} \E\big| \tilde Y_{t_i}^\pi - \Uc_{i}(X_{t_i};\xi) \big|^2 & \leq \; (1 + C |\pi|) \E \big|Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big|^2 + CN \E\big| \tilde\Vc_{t_i} - \Uc_{i}(X_{t_i};\xi) \big|^2. 
+\end{aligned}
+$$
+
+On the other hand, by the martingale representation theorem, there exists an $\R^d$-valued square integrable process $(\tilde Z_t)_t$ such that 
+
+$$
+\begin{aligned}
+\label{RFBSDE} \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) & = \; \tilde\Vc_{t_i} - f(t_i,X_{t_i},\tilde\Vc_{t_i},\overline{{\tilde Z_{t_i}}}) \Delta t_i + \int_{t_i}^{t_{i+1}} \tilde Z_s\trans \diff W_s, 
+\end{aligned}
+$$
+
+and the expected squared loss function of the RDBDP scheme can be written as 
+
+$$
+\begin{aligned}
+\hat L_i(\theta) &= \; \tilde L_i(\theta) + \E \Big[ \int_{t_i}^{t_{i+1}} \big| \tilde Z_t - \overline{{\tilde Z_{t_i}}} \big|^2 \diff t \Big], 
+\end{aligned}
+$$
+
+where we notice by It\^o isometry that $\overline{{\tilde Z_{t_i}}}$ $=$ $\frac{1}{\Delta t_i}\E_i\Big[ \int_{t_i}^{t_{i+1}} \tilde Z_t dt \Big]$, and 
+
+$$
+\begin{aligned}
+\tilde L_i(\theta) & := \; \E \Big| \tilde\Vc_{t_i} - \Uc_i(X_{t_i};\xi) + \big( f(t_i,X_{t_i},\Uc_i(X_{t_i};\xi), \Zc_i(X_{t_i};\eta)) -f(t_i,X_{t_i},\tilde\Vc_{t_i},\overline{{\tilde Z_{t_i}}}) \big) \Delta t_i \Big|^2 \\ & \hspace{.6cm} + \; \Delta t_i \E \big| \overline{{\tilde Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2. 
+\end{aligned}
+$$
+
+By the same arguments as in Step 3 in the proof of Theorem [theo:scheme1_1](#theo:scheme1_1), using Lipschitz condition on $f$ and Young inequality, we show that for all $\theta$ $=$ $(\xi,\eta)$ 
+
+$$
+\begin{aligned}
+(1 - C \Delta t_i) \E \big| \tilde\Vc_{t_i} - \Uc_i(X_{t_i};\xi) \big|^2 + \frac{\Delta t_i}{2} \E \big| \overline{{\tilde Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2 \\ & \hspace{-7cm}\leq \tilde L_i(\theta) \; \leq \; (1 + C \Delta t_i) \E \big| \tilde\Vc_{t_i} - \Uc_i(X_{t_i};\xi) \big|^2 + C \Delta t_i \E \big| \overline{{\tilde Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2. 
+\end{aligned}
+$$
+
+By taking $\theta_i^*$ $=$ $(\xi_i^*,\eta_i^*)$ $\in$ ${\rm arg}\min_\theta \hat L_i^{}(\theta)$ $=$ ${\rm arg}\min_\theta \tilde L_i^{}(\theta)$, it follows that for $|\pi|$ small enough 
+
+$$
+\begin{aligned}
+\E \big| \tilde\Vc_{t_i} - \Uc_i^{}(X_{t_i};\xi_i^*) \big|^2 + \Delta t_i \E \big| \overline{{\tilde Z_{t_i}}} - \Zc_i^{}(X_{t_i};\eta_i^*) \big|^2 & \leq \; C \eps_i^{\Nc,\tilde v} + C \Delta t_i \eps_i^{\Nc,\tilde z}. 
+\end{aligned}
+$$
+
+By plugging into \eqref{tildeYU}, recalling that $\widehat\Uc_i(X_{t_i})$ $=$ $\max[\Uc_i(X_{t_i};\xi_i^*); g(X_{t_i})]$, $Y_{t_i}^\pi$ $=$ $\max[\tilde Y_{t_i}^\pi;g(X_{t_i})]$, and since $|\max(a,c) - \max(b,c)|$ $\leq$ $|a-b|$, we obtain 
+
+$$
+\begin{aligned}
+\E\big| Y_{t_i}^\pi - \widehat\Uc_{i}(X_{t_i}) \big|^2 & \leq \; (1 + C |\pi|) \E \big|Y_{t_{i+1}}^\pi - \widehat\Uc_{i+1}^{}(X_{t_{i+1}}) \big|^2 + CN \big( \eps_i^{\Nc,\tilde v} + \Delta t_i \eps_i^{\Nc,\tilde z} \big), 
+\end{aligned}
+$$
+
+and then by induction 
+
+$$
+\begin{aligned}
+\max_{i=0,\ldots,N-1} \E\big| Y_{t_i}^\pi - \widehat\Uc_{i}(X_{t_i}) \big|^2 & \leq \; C \sum_{i=0}^{N-1} \big( N \eps_i^{\Nc,\tilde v} + \eps_i^{\Nc,\tilde z} \big). 
+\end{aligned}
+$$
+
+Combining with \eqref{estimBC}, this proves the error estimate \eqref{eq:theo3} for the $Y$-component.
+
+The error estimate \eqref{eq:theo3} for the $Z$-component is proved along the same arguments as in Step 5 in the proof of Theorem [theo:scheme1_1](#theo:scheme1_1), and is omitted here. \ep
+
