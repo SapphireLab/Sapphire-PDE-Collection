@@ -1408,4 +1408,55 @@ It is always interesting to start by testing schemes in dimension one as one can
 
 Then we take some examples in higher dimensions and show that our method seems to work well when the dimension increases higher. 
 
+#### An example in 1D
+
+We take the following parameters for the BSDE problem defined by \eqref{eq:SDE} and \eqref{eqBSDE}: 
+
+$$
+\sigma = 1 , \; \mu = 0.2 , \; T = 2 , \; d=1, \label{coeff:pb_simple} 
+$$
+
+$$
+
+\begin{array}{rclrclrclrcl} f(t,x,y,z) &= & (\cos(x) (e^{\frac{T-t}{2}}+ \frac{\sigma^2}{2}) + \mu \sin(x)) e^{\frac{T-t}{2}} - \frac{1}{2} \left( \sin(x)\cos(x) e^{T-t} \right)^2 + \frac{1}{2}(yz)^2& & & & & & & & & \\ g(x)&= &\cos(x). & & & & & & & \end{array}
+
+$$
+
+for which, the explicit analytic solution is equal to $u(t,x) =e^{\frac{T-t}{2}} \cos(x)$.
+
+We want to estimate the solution $u$ and its gradient $D_x u$ from our schemes.
+
+This example is interesting, because with $T=1$, the method proposed in [^Han2017overcoming], initializing $u(0,.)$ as the solution of the associated linear problem associated ($f=0$) and randomly initializing $D_x u(0,.)$ works very well.
+
+However, for $T=2$, the method in [^Han2017overcoming] always fails on our test whatever the choice of the initialization: the algorithm is either trapped in a local minimum when the initial learning rate associated to the gradient method is too small or explodes when the learning rate is taken higher.
+
+This numerical failure is not dependent on the considered network: using some LSTM networks as in [^Chan2018machine] gives the same result.
+
+Because of the high non-linearity, we discretize the BSDE using $N$ $=$ $240$ time steps, and implemented hidden layers with $d+10$ $=$ $11$ neurons.
+
+Figure [fig:quentinCase1DS1](#fig:quentinCase1DS1) (resp.
+
+Figure [fig:quentinCase1DS2](#fig:quentinCase1DS2)) depicts the estimated functions $u(t,.)$ and $D_x u(t,.)$ estimated from DBDP1 (resp.
+
+DBDP2) scheme. 
+![](PDEQuentd1ndt240AUTOFalse_U_120.png)
+
+<a id='fig:quentinCase1DS1'>$u(t,.)$ and its estimate at time $t=1.$</a>
+
+![](PDEQuentd1ndt240AUTOTrue_U_120.png)
+
+<a id='fig:quentinCase1DS2'>$u(t,.)$ and its estimate at time $t=1.$</a>
+
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | 1.46332 | 0.01434  |
+| DBDP2 | 1.4387982 | 0.01354  |
+<a id=tab:sol1D>Estimate of $u(0,x_0)$ where $d$ $=$ $1$ and $x_0$ $=$ $1$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $1.4686938$.</a>
+
+\clearpage 
+
 ##
