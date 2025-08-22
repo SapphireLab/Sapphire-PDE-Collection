@@ -403,3 +403,10 @@ $$
 
 Then, update: $\widehat\Uc_i$ $=$ $\max\big[\Uc_i(.;\theta_i^*),g]$, and set $\hat\Zc_i$ $=$ $\Zc(.;\theta_i ^*)$. 
 
+## 4·Convergence analysis
+
+\label{secconv}
+
+The main goal of this section is to prove convergence of the DBDP schemes towards the solution $(Y,Z)$ to the BSDE \eqref{eqBSDE} (or reflected BSDE \eqref{RBSDE} for variational inequalities), and to provide a rate of convergence that depends on the approximation errors by neural networks. 
+
+#
