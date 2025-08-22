@@ -409,4 +409,378 @@ Then, update: $\widehat\Uc_i$ $=$ $\max\big[\Uc_i(.;\theta_i^*),g]$, and set $\h
 
 The main goal of this section is to prove convergence of the DBDP schemes towards the solution $(Y,Z)$ to the BSDE \eqref{eqBSDE} (or reflected BSDE \eqref{RBSDE} for variational inequalities), and to provide a rate of convergence that depends on the approximation errors by neural networks. 
 
+### Convergence of DBDP1
+
+We assume the standard Lipschitz conditions on $\mu$ and $\sigma$, which ensures the existence and uniqueness of an adapted solution $\Xc$ to the forward SDE \eqref{eq:SDE} satisfying for any $p$ $>$ $1$, 
+
+$$
+\begin{aligned}
+\label{integX} \E \big[ \sup_{0\leq t \leq T} |\Xc_t|^p \big] & \; < C_p(1 + |x_0|^p), 
+\end{aligned}
+$$
+
+for some constant $C_p$ depending only on $p$, $b$, $\sigma$ and $T$.
+
+Moreover, we have the well-known error estimate with the Euler scheme $X$ $=$ $X^\pi$ defined in \eqref{eq:eulerSDE} with a time grid $\pi$ $=$ $\{t_0=0<t_1< \ldots < t_N = T\}$, with modulus $|\pi|$ s.t. $N|\pi|$ is bounded by a constant depending only on $T$ (hence independent of $N$): 
+
+$$
+\begin{aligned}
+\label{estimEulerX} \max_{i=0,\ldots,N-1} \E \Big[ |\Xc_{t_{i+1}} - X_{t_{i+1}}|^2 + \sup_{t\in[t_i,t_{i+1}]} | \Xc_t - X_{t_i}|^2 \Big] & = \; O(|\pi|). 
+\end{aligned}
+$$
+
+Here, the standard notation $O(|\pi|)$ means that $\limsup_{|\pi| \rightarrow 0} \; |\pi|^{-1}
+
+O(|\pi|)$ $<$ $\infty$. \vspace{1mm}
+
+We shall make the standing usual assumptions on the driver $f$ and the terminal data $g$. \vspace{2mm} \noindent \textbf{(H1)} (i) There exists a constant $[f]_{_L}>0$ such that the driver $f$ satisfies: 
+
+$$
+\left| f(t_2,x_2,y_2,z_2) - f(t_1,x_1,y_1,z_1) \right| \leq [f]_{_L} \left( |t_2-t_1 |^{1/2} + |x_2-x_1| +|y_2-y_1| +|z_2-z_1| \right), 
+$$
+
+for all $(t_1,x_1,y_1,z_1)$ and $(t_2,x_2,y_2,z_2)$ $\in [0,T] \times \R^d \times \R \times \R^d$.
+
+Moreover, 
+
+$$
+\sup_{0 \leq t \leq T} |f(t,0,0,0)| < \infty. 
+$$
+
+(ii) The function $g$ satisfies a linear growth condition. \vspace{3mm}
+
+Recall that Assumption \textbf{(H1)} ensures the existence and uniqueness of an adapted solution $(Y,Z)$ to \eqref{eqBSDE} satisfying 
+
+$$
+\begin{aligned}
+\label{estiYZ} \E \Big[ \sup_{0\leq t \leq T} |Y_t|^2 + \int_0^T |Z_t|^2 \diff t \Big] & < \; \infty. 
+\end{aligned}
+$$
+
+From the linear growth condition on $f$ in {\bf (H1)}, and \eqref{integX}, we also see that 
+
+$$
+\begin{aligned}
+\label{integf2} \E \Big[ \int_0^T |f(t,\Xc_t,Y_t,Z_t)|^2 \diff t \Big] & < \; \infty. 
+\end{aligned}
+$$
+
+Moreover, we have the standard $L^2$-regularity result on $Y$: 
+
+$$
+\begin{aligned}
+\label{regulY} \max_{i=0,\ldots,N-1} \E \Big[ \sup_{t\in[t_i,t_{i+1}]} | Y_t - Y_{t_i}|^2 \Big] & = \; O(|\pi|). 
+\end{aligned}
+$$
+
+Let us also introduce the $L^2$-regularity of $Z$: 
+
+$$
+\begin{aligned}
+\eps^Z(\pi) & := \; \E \bigg[ \sum_{i=0}^{N-1} \int_{t_i}^{t_{i+1}} |Z_t - \bar Z_{t_i}|^2 dt \bigg], \;\;\; \mbox{ with } \; \bar Z_{t_i} \; := \; \frac{1}{\Delta t_i} \E_i \Big[ \int_{t_i}^{t_{i+1}}
+
+Z_t dt \Big], 
+\end{aligned}
+$$
+
+where $\E_i$ denotes the conditional expectation given $\Fc_{t_i}$.
+
+Since $\bar Z$ is a $L^2$-projection of $Z$, we know that $\eps^Z(\pi)$ converges to zero when $|\pi|$ goes to zero.
+
+Moreover, as shown in [^Zhang04numerical], when the terminal condition $g$ is also Lipschitz, we have 
+
+$$
+\begin{aligned}
+\eps^Z(\pi) & = \; O(|\pi|). 
+\end{aligned}
+$$
+
+Let us first investigate the convergence of the scheme DBDP1 in \eqref{eq:scheme1}, and define (implicitly) 
+
+$$
+\label{defVCZ} \left\{ 
+\begin{array}{rcl} \widehat\Vc_{t_i} & := & \E_i \big[ \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big] + f(t_i,X_{t_i},\widehat\Vc_{t_i},\overline{{\widehat Z_{t_i}}}) \Delta t_i \\ \overline{{\widehat Z_{t_i}}} & := & \frac{1}{\Delta t_i} \E_i\left[ \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \Delta W_{t_i} \right], \end{array}
+\right. 
+$$
+
+for $i$ $=$ $0,\ldots,N-1$.
+
+Notice that $\widehat\Vc_{t_i}$ is well-defined for $|\pi|$ small enough (recall that $f$ is Lipschitz) by a fixed point argument.
+
+By the Markov property of the discretized forward process $(X_{t_i})_{i=0,\ldots,N}$, we note that there exists some deterministic functions $\hat v_i$ and $\overline{{\hat z_i}}$ s.t. 
+
+$$
+\begin{aligned}
+\label{defhatv1} \widehat\Vc_{t_i}^{} \; = \; \hat v_i^{}(X_{t_i}), & \mbox{ and } \;\; \overline{{\widehat Z_{t_i}}^{}} \; = \; \overline{{\hat z_i}^{}}(X_{t_i}), \;\;\;\;\; i =0,\ldots,N-1. 
+\end{aligned}
+$$
+
+Moreover, by the martingale representation theorem, there exists an $\R^d$-valued square integrable process $(\widehat Z_t)_t$ such that 
+
+$$
+\begin{aligned}
+\label{FBSDE} \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) & = \; \widehat\Vc_{t_i} - f(t_i,X_{t_i},\widehat\Vc_{t_i} ,\overline{{\widehat Z_{t_i}}}) \Delta t_i + \int_{t_i}^{t_{i+1}} \widehat Z_s\trans \diff W_s, 
+\end{aligned}
+$$
+
+and by It\^o isometry, we have 
+
+$$
+\begin{aligned}
+\label{ZbarZ} \overline{{\widehat Z_{t_i}}} &= \; \frac{1}{\Delta t_i} \E_i \Big[ \int_{t_i}^{t_{i+1}} \widehat Z_s \diff s \Big], \;\;\;\;\; i=0,\ldots,N-1. 
+\end{aligned}
+$$
+
+\vspace{2mm}
+
+Let us now define a measure of the (squared) error for the DBDP1 scheme by 
+
+$$
+\begin{aligned}
+\Ec\big[(\widehat\Uc^{(1)},\widehat\Zc^{(1)}),(Y,Z)\big] & := \; \max_{i=0,\ldots,N-1} \E \big|Y_{t_i}- \widehat\Uc_i^{(1)}(X_{t_i})\big|^2 + \E \bigg[ \sum_{i=0}^{N-1} \int_{t_i}^{t_{i+1}} \big| Z_t - \widehat\Zc_i^{(1)}(X_{t_i}) \big|^2 dt \bigg]. 
+\end{aligned}
+$$
+
+Our first main result gives an error estimate of the DBDP1 scheme in terms of the $L^2$-approximation errors of $\hat v_i$ and $\overline{{\hat z_i}}$ by neural networks $\Uc_i$ and $\Zc_i$, $i=0,\ldots,N-1$, assumed to be independent (see Remark [remNN](#remNN)), and defined as 
+
+$$
+\begin{aligned}
+\eps_i^{\Nc,v} \; := \; \inf_{\xi} \E \big|\hat v_i(X_{t_i}) - \Uc_i(X_{t_i};\xi) \big|^2 , \hspace{7mm} \eps_i^{\Nc,z} \; := \; \inf_{\eta} \E \big|\overline{{\hat z_i}^{}}(X_{t_i}) - \Zc_i(X_{t_i};\eta) \big|^2. 
+\end{aligned}
+$$
+
+Here, we fix the structure of the neural networks with input dimension $d$, output dimension $d_1$ $=$ $1$ for $\Uc_i$, and $d_1$ $=$ $d$ for $\Zc_i$, number of layers $L$, and $m$ neurons for the hidden layers, and the parameters vary in the whole set $\R^{N_m}$ where $N_m$ is the number of parameters.
+
+From the universal approximation theorem (I) ([^Horetal89]), we know that $\eps_i^{N N,v}$ and $\eps_i^{NN,z}$ converge to zero as $m$ goes to infinity, hence can be made arbitrary small for sufficiently large number of neurons. 
+\begin{Theorem} \emph{(Consistency of DBDP1)} \label{theo:scheme1_1}
+
+Under {\bf (H1)}, there exists a constant $C>0$, independent of $\pi$, such that 
+
+$$
+\begin{aligned}
+\Ec\big[(\widehat\Uc^{(1)},\widehat\Zc^{(1)}),(Y,Z)\big] & \leq \; C \Big( \E \big|g(\Xc_{T}) - g(X_T) \big|^2 + |\pi| + \eps^Z(\pi) \\ & \hspace{9mm} + \; \sum_{i=0}^{N-1} \big(N \eps_i^{\Nc,v} + \eps_i^{\Nc,z}\big) \Big). \label{eq:theo1_scheme1} 
+\end{aligned}
+$$
+
+\end{Theorem}
+
+\begin{Remark} {\rm The error contributions for the DBDP1 scheme in the r.h.s. of estimation \eqref{eq:theo1_scheme1} consists of four terms.
+
+The first three terms correspond to the time discretization of BSDE, similarly as in [^Bouchard2004discrete], [^Gobet2005regression], namely (i) the strong approximation of the terminal condition (depending on the forward scheme and the terminal data $g$), and converging to zero, as $|\pi|$ goes to zero, with a rate $|\pi|$ when $g$ is Lipschitz by \eqref{estimEulerX} (see [^Avi09] for irregular $g$), (ii) the strong approximation of the forward Euler scheme, and the $L^2$-regularity of $Y$, which gives a convergence of order $|\pi|$, (iii) the $L^2$-regularity of $Z$, which converges to zero, as $|\pi|$ goes to zero, with a rate $|\pi|$ when $g$ is Lipschitz.
+
+Finally, the better the neural networks are able to approximate/learn the functions $\hat v_i$ and $\overline{{\hat z_i}}$ at each time $i$ $=$ $0,\ldots,N-1$, the smaller is the last term in the error estimation.
+
+Moreover, given a prescribed accuracy for the neural network approximation error, the number of parameters of the employed deep neural networks grows at most polynomially in the PDE dimension, as recently proved in [^Hutetal19] in the case of semi-linear heat equations. } \ep \end{Remark}
+\vspace{3mm} \noindent {\bf Proof of Theorem [theo:scheme1_1](#theo:scheme1_1).} \noindent In the following, $C$ will denote a positive generic constant independent of $\pi$, and that may take different values from line to line. \vspace{1mm} \noindent {\it Step 1}.
+
+Fix $i$ $\in$ $\{0,\ldots,N-1\}$, and observe by \eqref{eqBSDE}, \eqref{defVCZ} that 
+
+$$
+\begin{aligned}
+\label{reldifY} \hspace{-5mm}
+
+Y_{t_i} - \widehat\Vc_{t_i} & = \E_i\big[ Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big] + \E_i\Big[ \int_{t_i}^{t_{i+1}} f(t,\Xc_t,Y_t,Z_t) - f(t_i,X_{t_i},\widehat\Vc_{t_i},\overline{{\widehat Z_{t_i}}}) \diff t \Big]. 
+\end{aligned}
+$$
+
+By using Young inequality: $(a+b)^2$ $\leq$ $(1+\gamma \Delta t_i)a^2$ $+$ $(1+\frac{1}{\gamma \Delta t_i})b^2$ for some $\gamma$ $>$ $0$ to be chosen later, Cauchy-Schwarz inequality, the Lipschitz condition on $f$ in {\bf (H1)}, and the estimation \eqref{estimEulerX} on the forward process, we then have 
+
+$$
+\begin{aligned}
+\E\big| Y_{t_i} - \widehat\Vc_{t_i} \big|^2 & \leq \; (1 +\gamma\Delta t_i) \E \Big| \E_i\big[ Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big] \Big|^2 \\ & \;\;\; + 4 [f]^2_{_L} \Delta t_i \big(1+\frac{1}{\gamma \Delta t_i}\big) \Big\{ |\Delta t_i|^2 + \E\Big[ \int_{t_i}^{t_{i+1}} \big| Y_t - \widehat\Vc_{t_i} \big|^2 \diff t \Big] \\ & \hspace{4.3cm} + \; \E\Big[ \int_{t_i}^{t_{i+1}} \big| Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] \Big\} \\ & \leq \; (1 +\gamma\Delta t_i) \E \Big| \E_i\big[ Y_{t_{i+1}} - \hat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big] \Big|^2 \label{inegYVi} \\ & \;\;\; + 4 \frac{[f]^2_{_L}}{\gamma} (1+ \gamma \Delta t_i) \Big\{ C |\pi|^2 + 2 \Delta t_i \E\big| Y_{t_i} - \widehat\Vc_{t_i} \big|^2 + \E\Big[ \int_{t_i}^{t_{i+1}} \big| Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] \Big\}, 
+\end{aligned}
+$$
+
+where we use in the last inequality the $L^2$-regularity \eqref{regulY} of $Y$.
+
+Recalling the definition of $\bar Z$ as a $L^2$-projection of $Z$, we observe that 
+
+$$
+\begin{aligned}
+\label{Pythagore} \E\Big[ \int_{t_i}^{t_{i+1}} \big| Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] & = \; \E \Big[\int_{t_i}^{t_{i+1}} \big| Z_t - \bar Z_{t_i}\big|^2 \diff t \Big] + \Delta t_i \E \big|\bar Z_{t_i} - \overline{{\widehat Z_{t_i}}} \big|^2. 
+\end{aligned}
+$$
+
+By multiplying equation \eqref{eqBSDE} between $t_i$ and $t_{i+1}$ by $\Delta W_{t_i}$, and using It\^o isometry, we have together with \eqref{defVCZ} 
+
+$$
+\begin{aligned}
+\Delta t_i \big( \bar Z_{t_i} - \overline{{\widehat Z_{t_i}}} \big) & = \; \E_i \big[ \Delta W_{t_i} \big( Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big) \big] + \E_i \Big[ \Delta W_{t_i} \int_{t_i}^{t_{i+1}} f(t,\Xc_t,Y_t,Z_t) \diff t \Big] \\ & = \; \E_i \Big[ \Delta W_{t_i} \Big( Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) - \E_i\big[ Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}})\big] \Big) \Big] \\ & \;\;\;\; + \; \E_i \Big[ \Delta W_{t_i} \int_{t_i}^{t_{i+1}} f(t,\Xc_t,Y_t,Z_t) \diff t \Big]. 
+\end{aligned}
+$$
+
+By Cauchy-Schwarz inequality, and law of iterated conditional expectations, this implies 
+
+$$
+\begin{aligned}
+\Delta t_i \E \big| \bar Z_{t_i} - \overline{{\widehat Z_{t_i}}} \big|^2 & \leq \; 2 d \Big( \E \big|Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big|^2 - \E \Big| \E_i\big[ Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}})\big] \Big|^2 \Big) \\ & \;\;\;\;\; + 2 d \Delta t_i \E \Big[ \int_{t_i}^{t_{i+1}} |f(t,\Xc_t,Y_t,Z_t)|^2 \diff t \Big]. \label{inegZi} 
+\end{aligned}
+$$
+
+Then, by plugging \eqref{Pythagore} and \eqref{inegZi} into \eqref{inegYVi}, and choosing $\gamma$ $=$ $8 d [f]^2_{_L}$, we have 
+
+$$
+\begin{aligned}
+\E\big| Y_{t_i} - \widehat\Vc_{t_i} \big|^2 & \leq \; C \Delta t_i \E\big| Y_{t_i} - \widehat\Vc_{t_i} \big|^2 + (1 +\gamma\Delta t_i) \E \big|Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big|^2 + C |\pi|^2 \\ & \;\;\; + \; C \E \Big[\int_{t_i}^{t_{i+1}} \big| Z_t - \bar Z_{t_i}\big|^2 \diff t \Big] + C \Delta t_i \E \Big[ \int_{t_i}^{t_{i+1}} |f(t,\Xc_t,Y_t,Z_t)|^2 \diff t \Big], 
+\end{aligned}
+$$
+
+and thus for $|\pi|$ small enough: 
+
+$$
+\begin{aligned}
+\E\big| Y_{t_i} - \widehat\Vc_{t_i} \big|^2 & \leq \; (1 + C |\pi|) \E \big|Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big|^2 + C |\pi|^2 \\ & \hspace{.2cm}+ C \E \Big[\int_{t_i}^{t_{i+1}} \big| Z_t - \bar Z_{t_i}\big|^2 \diff t \Big] + C |\pi| \E \Big[ \int_{t_i}^{t_{i+1}} |f(t,\Xc_t,Y_t,Z_t)|^2 \diff t \Big]. \label{interYUV} 
+\end{aligned}
+$$
+
+\vspace{1mm} \noindent {\it Step 2.}
+
+By using Young inequality in the form: $(a+b)^2$ $\geq$ $(1- |\pi|)a^2$ $+$ $(1-\frac{1}{|\pi|})b^2$ $\geq$ $(1- |\pi|)a^2$ $-$ $\frac{1}{ |\pi|}b^2$, we have 
+
+$$
+\begin{aligned}
+\E\big| Y_{t_i} - \widehat\Vc_{t_i} \big|^2 & = \E\big| Y_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) + \widehat\Uc_{i}^{(1)}(X_{t_{i}}) - \widehat\Vc_{t_i} \big|^2 \\ & \geq \; (1- |\pi|) \E\big| Y_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2 - \frac{1}{ |\pi|} \E \big| \widehat\Uc_{i}^{(1)}(X_{t_{i}}) - \widehat\Vc_{t_i} \big|^2. \label{YUinter} 
+\end{aligned}
+$$
+
+By plugging this last inequality into \eqref{interYUV}, we then get for $|\pi|$ small enough 
+
+$$
+\begin{aligned}
+\E\big| Y_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2 & \leq \; (1 + C |\pi|) \E \big|Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big|^2 + C |\pi|^2 \\ & \;\;\;\;\; + \; C \E \Big[\int_{t_i}^{t_{i+1}} \big| Z_t - \bar Z_{t_i}\big|^2 \diff t \Big] + C |\pi| \E \Big[ \int_{t_i}^{t_{i+1}} |f(t,\Xc_t,Y_t,Z_t)|^2 \diff t \Big] \\ & \;\;\;\;\; + \; C N \E \big| \widehat\Vc_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2. 
+\end{aligned}
+$$
+
+From discrete Gronwall's lemma (or by induction), and recalling the terminal condition $Y_{t_N}$ $=$ $g(\Xc_T)$, $\widehat\Uc_{i}^{(1)}(X_{t_{N}})$ $=$ $g(X_T)$, the definition $\eps^Z(\pi)$ of the $L^2$-regularity of $Z$, and \eqref{integf2}, this yields 
+
+$$
+\begin{aligned}
+\max_{i=0,\ldots,N-1} \E\big| Y_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2 & \leq \; C \E \big|g(\Xc_{T}) - g(X_T) \big|^2 + C |\pi| + C \eps^Z(\pi) \\ & \hspace{5mm} + \; C N \sum_{i=0}^{N-1} \E \big| \widehat\Vc_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2. \label{estimYinter} 
+\end{aligned}
+$$
+
+\vspace{1mm} \noindent {\it Step 3.}
+
+Fix $i$ $\in$ $\{0,\ldots,N-1\}$.
+
+By using relation \eqref{FBSDE} in the expression of the expected quadratic loss function in \eqref{eq:scheme1}, and recalling the definition of $\overline{{\widehat Z_{t_i}}}$ as a $L^2$-projection of $\widehat Z_t$, we have for all parameters $\theta$ $=$ $(\xi,\eta)$ of the neural networks $\Uc_i(.;\xi)$ and $\Zc_i(.;\eta)$ 
+
+$$
+\begin{aligned}
+\label{LtildeL} \hat L_i^{(1)}(\theta) &= \; \tilde L_i(\theta) + \E \Big[ \int_{t_i}^{t_{i+1}} \big| \widehat Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] 
+\end{aligned}
+$$
+
+with 
+
+$$
+\begin{aligned}
+\tilde L_i(\theta) & := \; \E \Big| \widehat\Vc_{t_i} - \Uc_i(X_{t_i};\xi) + \big( f(t_i,X_{t_i},\Uc_i(X_{t_i};\xi),\Zc_i(X_{t_i};\eta)) - f(t_i,X_{t_i},\widehat\Vc_{t_i},\overline{{\widehat Z_{t_i}}}) \big) \Delta t_i \Big|^2 \\ & \hspace{.6cm} + \; \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2. 
+\end{aligned}
+$$
+
+By using Young inequality: $(a+b)^2$ $\leq$ $(1+\gamma \Delta t_i)a^2$ $+$ $(1+\frac{1}{\gamma \Delta t_i})b^2$, together with the Lipschitz condition on $f$ in {\bf (H1)}, we clearly see that 
+
+$$
+\begin{aligned}
+\label{L<} \tilde L_i(\theta) & \leq \; (1 + C \Delta t_i) \E \big| \widehat\Vc_{t_i} - \Uc_i(X_{t_i};\xi) \big|^2 + C \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2. 
+\end{aligned}
+$$
+
+On the other hand, using Young inequality in the form: $(a+b)^2$ $\geq$ $(1- \gamma \Delta t_i)a^2$ $+$ $(1-\frac{1}{\gamma \Delta t_i})b^2$ $\geq$ $(1- \gamma \Delta t_i)a^2$ $-$ $\frac{1}{\gamma \Delta t_i}b^2$, together with the Lipschitz condition on $f$, we have 
+
+$$
+\begin{aligned}
+\tilde L_i(\theta) & \geq \; (1 - \gamma \Delta t_i) \E \big| \widehat\Vc_{t_i} - \Uc_i(X_{t_i};\xi) \big|^2 - \frac{2 \Delta t_i [f]^2_{_L}}{\gamma} \Big( \E \big| \widehat\Vc_{t_i} - \Uc_i(X_{t_i};\xi) \big|^2 + \E \big| \overline{{\widehat Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2 \Big) \nonumber \\ & \hspace{.6cm} + \; \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2. 
+\end{aligned}
+$$
+
+By choosing $\gamma$ $=$ $4[f]_{_L}^2$, this yields 
+
+$$
+\begin{aligned}
+\label{L>} \tilde L_i(\theta) & \geq \; (1 - C \Delta t_i) \E \big| \widehat\Vc_{t_i} - \Uc_i(X_{t_i};\xi) \big|^2 + \frac{\Delta t_i}{2} \E \big| \overline{{\widehat Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2. 
+\end{aligned}
+$$
+
+\vspace{1mm} \noindent {\it Step 4.}
+
+Fix $i$ $\in$ $\{0,\ldots,N-1\}$, and take $\theta_i^*$ $=$ $(\xi_i^*,\eta_i^*)$ $\in$ ${\rm arg}\min_\theta \hat L_i^{(1)}(\theta)$ so that $\widehat\Uc_i^{(1)}$ $=$ $\Uc_i(.;\xi_i^*)$, and $\widehat\Zc_i^{(1)}$ $=$ $\Zc_i(.;\eta_i^*)$.
+
+By \eqref{LtildeL}, notice that $\theta_i^*$ $\in$ ${\rm arg}\min_\theta \tilde L_i(\theta)$.
+
+From \eqref{L>} and \eqref{L<}, we then have for all $\theta$ $=$ $(\xi,\eta)$ 
+
+$$
+\begin{aligned}
+(1 - C \Delta t_i) \E \big| \widehat\Vc_{t_i} - \widehat\Uc_i^{(1)}(X_{t_i}) \big|^2 + \frac{\Delta t_i}{2} \E \big| \overline{{\widehat Z_{t_i}}} - \widehat\Zc_i^{(1)}(X_{t_i}) \big|^2 \\ & \hspace{-8cm} \leq \tilde L_i(\theta_i^*) \; \leq \tilde L_i(\theta) \; \leq \; (1 + C \Delta t_i) \E \big| \widehat\Vc_{t_i} - \Uc_i(X_{t_i};\xi) \big|^2 + C \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \Zc_i(X_{t_i};\eta) \big|^2. \nonumber 
+\end{aligned}
+$$
+
+For $|\pi|$ small enough, and recalling \eqref{defhatv1}, this implies 
+
+$$
+\begin{aligned}
+\label{estimVU} \E \big| \widehat\Vc_{t_i} - \widehat\Uc_i^{(1)}(X_{t_i}) \big|^2 + \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \widehat\Zc_i^{(1)}(X_{t_i}) \big|^2 & \leq \; C \eps_i^{\Nc,v} + C \Delta t_i \eps_i^{\Nc,z}. 
+\end{aligned}
+$$
+
+Plugging this last inequality into \eqref{estimYinter}, we obtain 
+
+$$
+\begin{aligned}
+\max_{i=0,\ldots,N-1} \E\big| Y_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2 & \leq \; C \E \big|g(\Xc_{T}) - g(X_T) \big|^2 + C |\pi| + C \eps^Z(\pi) \\ & \hspace{6mm} + \; C \sum_{i=0}^{N-1} \big( N \eps_i^{\Nc,v} + \eps_i^{\Nc,z} \big), \label{estimYfin} 
+\end{aligned}
+$$
+
+which proves the consistency of the $Y$-component in \eqref{eq:theo1_scheme1}. \vspace{1mm} \noindent {\it Step 5.}
+
+Let us finally prove the consistency of the $Z$-component.
+
+From \eqref{Pythagore} and \eqref{inegZi}, we have for any $i$ $=$ $0,\ldots,N-1$: 
+
+$$
+\begin{aligned}
+\E\Big[ \int_{t_i}^{t_{i+1}} \big| Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] & \leq \; \E\Big[ \int_{t_i}^{t_{i+1}} \big| Z_t - \bar Z_{t_i} \big|^2 \diff t \Big] + 2d |\pi| \E \Big[ \int_{t_i}^{t_{i+1}} |f(t,\Xc_t,Y_t,Z_t)|^2 \diff t \Big] \\ & \hspace{.6cm} + \; 2d \Big( \E \big|Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big|^2 - \E \Big| \E_i\big[ Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}})\big] \Big|^2 \Big) 
+\end{aligned}
+$$
+
+By summing over $i$ $=$ $0,\ldots,N-1$, we get (recall \eqref{integf2}) 
+
+$$
+\begin{aligned}
+\E \Big[ \sum_{i=0}^{N-1} \int_{t_i}^{t_{i+1}} \big| Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] & \leq \; \eps^Z(\pi) + C |\pi| + 2d \E \big|g(\Xc_{T}) - g(X_T) \big|^2 \label{Zinter} \\ & \; + \: 2d \sum_{i=0}^{N-1} \Big( \E \big|Y_{t_{i}} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2 - \E \Big| \E_i\big[ Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}})\big] \Big|^2 \Big) \nonumber 
+\end{aligned}
+$$
+
+where we change the indices in the last summation.
+
+Now, from \eqref{inegYVi}, \eqref{YUinter}, we have 
+
+$$
+\begin{aligned}
+2d \Big( \E \big|Y_{t_{i}} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2 - \E \Big| \E_i\big[ Y_{t_{i+1}} - \widehat\Uc_{i+1}^{(1)}(X_{t_{i+1}})\big] \Big|^2 \Big) \\ & \hspace{-7cm}\leq \Big(\frac{1 +\gamma |\pi|}{1 - |\pi|} - 1 \Big)\E \Big| \E_i\big[ Y_{t_{i+1}} - \hat\Uc_{i+1}^{(1)}(X_{t_{i+1}}) \big] \Big|^2 \\ & \hspace{-6.4cm}+ \; \frac{8d[f]^2_{_L}}{\gamma} \frac{1+ \gamma |\pi|}{1 - |\pi|} \Big\{ C |\pi|^2 + |\pi| \E\big| Y_{t_i} - \widehat\Vc_{t_i} \big|^2 + \E\Big[ \int_{t_i}^{t_{i+1}} \big| Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] \Big\} \\ & \hspace{-6.4cm}+ \; \frac{2d}{|\pi|(1-|\pi|)} \E \big| \widehat\Uc_{i}^{(1)}(X_{t_{i}}) - \widehat\Vc_{t_i} \big|^2. 
+\end{aligned}
+$$
+
+We now choose $\gamma$ $=$ $24d[f]^2_{_L}$ so that $\frac{8d[f]^2_{_L}}{\gamma} (1+ \gamma |\pi|)/(1 - |\pi|)$ $\leq$ $1/2$ for $|\pi|$ small enough, and by plugging into \eqref{Zinter}, we obtain (note also that $\big[(1 +\gamma |\pi|)/(1 - |\pi|) - 1 \big]$ $=$ $O(|\pi|)$): 
+
+$$
+\begin{aligned}
+\frac{1}{2} \E \Big[ \sum_{i=0}^{N-1} \int_{t_i}^{t_{i+1}} \big| Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] & \leq \; \eps^Z(\pi) + C |\pi| + C \max_{i=0,\ldots,N} \E\big| Y_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2 \\ & \hspace{.6cm}+ \; \frac{1}{2} |\pi| \sum_{i=0}^{N-1} \E\big| Y_{t_i} - \widehat\Vc_{t_i} \big|^2 + CN \sum_{i=0}^{N-1} \E \big| \widehat\Uc_{i}^{(1)}(X_{t_{i}}) - \widehat\Vc_{t_i} \big|^2 \\ & \leq \; C \eps^Z(\pi) + C |\pi| + C \max_{i=0,\ldots,N} \E\big| Y_{t_i} - \widehat\Uc_{i}^{(1)}(X_{t_{i}}) \big|^2 \\ & \hspace{.6cm} + \; CN \sum_{i=0}^{N-1} \E \big| \widehat\Uc_{i}^{(1)}(X_{t_{i}}) - \widehat\Vc_{t_i} \big|^2 \\ & \leq \; C \E \big|g(\Xc_{T}) - g(X_T) \big|^2 + C |\pi| + C \eps^Z(\pi) \\ & \hspace{6mm} + \; C \sum_{i=0}^{N-1} \big( N \eps_i^{\Nc,v} + \eps_i^{\Nc,z} \big), \label{estimZhatZ} 
+\end{aligned}
+$$
+
+where we used \eqref{interYUV} and \eqref{integf2} in the second inequality, and \eqref{estimVU} and \eqref{estimYfin} in the last inequality.
+
+By writing that 
+
+$$
+\begin{aligned}
+\E\Big[ \int_{t_i}^{t_{i+1}} \big| Z_t - \widehat\Zc_i^{(1)}(X_{t_i}) \big|^2 \diff t \Big] & \leq \; 2 \E\Big[ \int_{t_i}^{t_{i+1}} \big| Z_t - \overline{{\widehat Z_{t_i}}} \big|^2 \diff t \Big] + 2 \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \widehat\Zc_i^{(1)}(X_{t_i}) \big|^2, 
+\end{aligned}
+$$
+
+and using \eqref{estimVU}, \eqref{estimZhatZ}, we obtain after summation over $i$ $=$ $0,\ldots,N-1$, the required error estimate for the $Z$-component as in \eqref{estimYfin}, and this ends the proof. \ep 
+
 #
