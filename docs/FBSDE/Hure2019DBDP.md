@@ -1535,4 +1535,112 @@ Average and standard deviation observed over 10 independent runs are reported.
 
 The theoretical solution is $1.5909$. </a>
 
+### PDEs with unbounded solution and more complex structure
+
+\label{sec:numeric2}
+
+In this section with take the following parameters 
+\begin{flalign} \sigma & = \; \frac{1}{\sqrt{d}} \I_d, \quad \mu = 0, \quad T = 1 , \\ f(x,y,z) & = \; k(x) + \frac{1}{2 \sqrt{d}} y(\un_d.z) + \frac{ y^2}{2} \label{coeff:pb_complex} \end{flalign}
+where the function $k$ is chosen such that the solution to the PDE is equal to 
+\begin{flalign*} u(t,x) = \frac{T-t}{d} \sum_{i=1}^d ( \sin(x_i) 1_{x_i<0} + x_i 1_{x_1 \ge 0} ) + \cos \left(\sum_{i=1}^d i x_i \right). \end{flalign*}
+
+Notice that the structure of the solution is more complex than in the first example.
+
+We aim at evaluating the solution at $x=0.5 \un_d$.
+
+We take $120$ time steps for the Euler time discretization and $d+10$ neurons in each hidden layers.
+
+As shown in Figures [fig:huyenCase1DS1](#fig:huyenCase1DS1) and [fig:huyenCase1DS2](#fig:huyenCase1DS2) as well as in Table [tab:sol1D_complex](#tab:sol1D_complex), the three schemes provide accurate and stable results in dimension $d$ $=$ $1$. 
+![](PDEHuyend1ndt120AUTOFalse_U_60.png)
+
+<a id='fig:huyenCase1DS1'>$u(t,.)$ and its estimate at time $t=0.5$.</a>
+
+![](PDEHuyend1ndt120AUTOTrue_U_60.png)
+
+<a id='fig:huyenCase1DS2'>$u(t,.)$ and its estimate at time $t=0.5$.</a>
+
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | 1.3720 | 0.00301  |
+| DBDP2 | 1.37357 | 0.0022  |
+| Scheme cite{han2017overcoming} | 1.37238 | 0.00045  |
+<a id=tab:sol1D_complex> Estimate of $u(0,x_0)$, where $d$ $=$ $1$ and $x_0$ $=$ $0.5$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $1.37758$. </a>
+
+In dimension 2, the three schemes provide very accurate and stable results, as shown in Figures [fig:huyenCase2DS1](#fig:huyenCase2DS1) and [fig:huyenCase2DS2](#fig:huyenCase2DS2), as well as in Table [tab:sol2D](#tab:sol2D). 
+![](PDEHuyend2ndt120AUTOFalse_U_60.png)
+
+<a id='fig:huyenCase2DS1'>Error on solution at date $t=0.5$.</a>
+
+![](PDEHuyend2ndt120AUTOTrue_U_60.png)
+
+<a id='fig:huyenCase2DS2'>Error on solution at date $t=0.5$.</a>
+
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | 0.5715359 | 0.0038  |
+| DBDP2 | 0.5707974 | 0.00235 |
+| Scheme cite{han2017overcoming} | 0.57145 | 0.0006  |
+<a id=tab:sol2D>
+
+Estimate of $u(0,x_0)$, where $d$ $=$ $2$ and $x_0$ $=$ $0.5\un_{2}$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $0.570737$. </a>
+
+Above dimension 3, the scheme [^Han2017overcoming] always explodes no matter the chosen initial learning rate and the activation function for the hidden layers (among the $\tanh$, ELU, ReLu and sigmoid ones).
+
+Besides, taking $3$ or $4$ hidden layers does not improve the results.
+
+We reported the results obtained in dimension $d$ $=$ $5$ and $8$ in Table [tab:sol5D](#tab:sol5D) and [tab:sol8D](#tab:sol8D).
+
+Scheme \eqref{eq:scheme1} seems to work better than scheme \eqref{eq:scheme2} as the dimension increases.
+
+Note that the standard deviation increases with the dimension of the problem. 
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | 0.8666 | 0.013  |
+| DBDP2 | 0.83646 | 0.00453  |
+| Scheme cite{han2017overcoming} | NC | NC  |
+<a id=tab:sol5D>
+
+Estimate of $u(0,x_0)$, where $d$ $=$ $5$ and $x_0$ $=$ $0.5\un_{5}$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $0.87715$. </a>
+
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | 1.169441 | 0.02537  |
+| DBDP2 | 1.0758344 | 0.00780  |
+| Scheme cite{han2017overcoming} | NC | NC  |
+<a id=tab:sol8D>
+
+Estimate of $u(0,x_0)$, where $d$ $=$ $8$ and $x_0$ $=$ $0.5\un_{8}$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $1.1603167$. </a>
+
+When $d\geq10$, schemes \eqref{eq:scheme1} and \eqref{eq:scheme2} both fail at providing correct estimates of the solution, as shown in Table [tab:sol10D](#tab:sol10D).
+
+Increasing the number of layers or neurons does not improve the result. 
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | -0.3105 | 0.02296  |
+| DBDP2 | -0.3961| 0.0139 |
+| Scheme cite{han2017overcoming} | NC | NC  |
+<a id=tab:sol10D>
+
+Estimate of $u(0,x_0)$, where $d$ $=$ $10$ and $x_0$ $=$ $0.5\un_{10}$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $-0.2148861$. </a>
+
 #
