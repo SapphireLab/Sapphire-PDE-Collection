@@ -346,4 +346,60 @@ The small disadvantage is due to the Tensorflow structure.
 
 As it is done in python, the global graph creation takes much time as it is repeated for each time step and the global resolution is a little bit time consuming : as the dimension of the problem increases, the time difference decreases and it becomes hard to compare the computational time for a given accuracy when the dimension is above 5. 
 
-#
+### Extension to variational inequalities: scheme RDBDP
+
+\label{sec:varIneq}
+
+Let us consider a variational inequality in the form 
+
+$$
+\label{eq:IQV} \left\{ 
+
+$$
+\begin{aligned}
+\min \big[ - \partial_t u - \Lc u - f(t,x,u,\sigma\trans D_x u) , u - g \big] & = 0 , \;\;\;\;\;\;\; t \in [0,T), \; x \in \R^d, \\ u(T,x) &=g(x), \;\;\; x\in\R^d. 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+which arises, e.g., in optimal stopping problem and American option pricing in finance.
+
+It is known, see e.g. [^Elk97], that such variational inequality is related to reflected BSDE of the form 
+
+$$
+\begin{aligned}
+\label{RBSDE}
+
+Y_t &= \; g(\Xc_T) + \int_t^T f(s,\Xc_s,Y_s,Z_s) \diff s - \int_t^T Z_s\trans \diff W_s + K_T - K_t, \\ Y_t & \geq \; g(X_t), \;\;\; 0 \leq t \leq T, 
+\end{aligned}
+$$
+
+where $K$ is an adapted non-decreasing process satisfying 
+
+$$
+\begin{aligned}
+\int_0^T \big(Y_t - g(X_t) \big) dK_t & = \; 0. 
+\end{aligned}
+$$
+
+The extension of our DBDP1 scheme for such variational inequality, and refereed to as RDBDP scheme, becomes 
+
+-  Initialize $\widehat\Uc_N$ $=$ $g$ 
+-  For $i$ $=$ $N-1,\ldots,0$, given $\widehat\Uc_{i+1}$, use a pair of (multilayer) neural network $(\Uc_i(.;\theta),\Zc_i(.;\theta))$ $\in$ $\Nc\Nc_{d,1,L,m}^\varrho(\R^{N_m})\times\Nc\Nc_{d,d,L,m}^\varrho(\R^{N_m})$, and compute (by SGD) the minimizer of the expected quadratic loss function 
+
+$$
+\label{eq:schemeVI} \left\{ 
+
+$$
+\begin{aligned}
+\hat L_i(\theta) & := \E \big| \widehat\Uc_{i+1}(X_{t_{i+1}}) - F(t_i,X_{t_i},\Uc_i(X_{t_i};\theta),\Zc_i(X_{t_i};\theta),\Delta t_i,\Delta W_{t_i}) \big|^2 \\ \theta_i^* & \in {\rm arg}\min_{\theta\in\R^{N_m}} \hat L_i(\theta). 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+Then, update: $\widehat\Uc_i$ $=$ $\max\big[\Uc_i(.;\theta_i^*),g]$, and set $\hat\Zc_i$ $=$ $\Zc(.;\theta_i ^*)$. 
+
