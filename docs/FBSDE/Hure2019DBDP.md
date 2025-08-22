@@ -151,3 +151,36 @@ Moreover, we have a universal approximation result for the derivatives in the ca
 
 Then, $\Nc\Nc_{d,d_1,2}^\varrho$ approximates any function and its derivatives up to order $k$, arbitrary well on any compact set of $\R^d$.
 
+## 3·Deep learning-based schemes for semi-linear PDEs
+
+\label{secalgo}
+
+The starting point for our probabilistic numerical schemes to the PDE \eqref{eq:PDEInit} is the well-known (see [^Pardoux1990adapted]) nonlinear Feynman-Kac formula via the pair $(Y,Z)$ of $\F$-adapted processes valued in $\R\times\R^d$, solution to the BSDE 
+
+$$
+\begin{aligned}
+\label{eqBSDE}
+
+Y_t &= g(\Xc_T) + \int_t^T f(s,\Xc_s,Y_s,Z_s) \diff s - \int_t^T Z_s\trans \diff W_s, \;\;\; 0 \leq t \leq T, 
+\end{aligned}
+$$
+
+related to the solution $u$ of \eqref{eq:PDEInit} via 
+
+$$
+\begin{aligned}
+
+Y_t & = u(t,\Xc_t), \;\;\; 0 \leq t \leq T, 
+\end{aligned}
+$$
+
+and when $u$ is smooth: 
+
+$$
+\begin{aligned}
+
+Z_t & = \; \sigma\trans(t,\Xc_t)D_x u(t,\Xc_t), \;\;\; 0 \leq t \leq T. 
+\end{aligned}
+$$
+
+#
