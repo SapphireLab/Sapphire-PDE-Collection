@@ -1459,4 +1459,80 @@ The theoretical solution is $1.4686938$.</a>
 
 \clearpage 
 
-##
+#### Increasing the dimension
+
+We extend the example from the previous section to the following $d$-dimensional problem: 
+\begin{flalign*} d\geq 1, \quad & \sigma = \frac{1}{\sqrt{d}} \I_d, \quad \mu = \frac{0.2}{d} \un_d , \quad T = 1 , \end{flalign*}
+
+$$
+
+\begin{array}{rcl} f(t,x,y,z) & = & (\cos( \bar x) (e^{\frac{T-t}{2}}+ \frac{1}{2}) + 0.2 \sin( \bar x)) e^{\frac{T-t}{2}} - \frac{1}{2} \left( \sin(\bar x)\cos(\bar x) e^{T-t} \right)^2 + \frac{1}{2d}(u(\un_d.z))^2,\\ g(x) & = &\cos(\bar x), \end{array}
+
+$$
+
+with $\bar x = \sum_{i=1}^d x_i$.
+
+We take $N$ $=$ $120$ in the Euler scheme, and $d+10$ neurons for each hidden layer.
+
+We take $1000$ trajectories in mini batch, use data renormalization, and check the loss convergence every $50$ iterations.
+
+For this small maturity, the scheme [^Han2017overcoming] generally converges, and we give the results obtained with the same network and initializing the scheme with the linear solution of the problem.
+
+Results in dimension 5 to 50 are given in Tables [tab:sol5Dsimple](#tab:sol5Dsimple), [tab:sol10Dsimple](#tab:sol10Dsimple), [tab:sol20D](#tab:sol20D) and [tab:sol50D](#tab:sol50D).
+
+Both schemes \eqref{eq:scheme1} and \eqref{eq:scheme2} work well with results very close to the solution and close to the results calculated by the scheme [^Han2017overcoming].
+
+As the dimension increases, scheme \eqref{eq:scheme1} seems to be the most accurate. 
+\begin{Remark} {\rm In dimension $50$, the initial learning rate in scheme [^Han2017overcoming] is taken small in order to avoid a divergence of the method.
+
+In fact, running the test 3 times (with 10 runs each time), we observed convergence of the algorithm two times, and in the last test: one of the ten run exploded, and another one clearly converged to a wrong solution. } \ep \end{Remark}
+
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | 0.4637038 | 0.004253  |
+| DBDP2 | 0.46335 | 0.00137  |
+| Scheme cite{han2017overcoming} | 0.46562 | 0.0035 |
+<a id=tab:sol5Dsimple>Estimate of $u(0,x_0)$ where $d$ $=$ $5$ and $x_0$ $=$ $\un_5$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $0.46768$. </a>
+
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | - 1.3895 | 0.00148 |
+| DBDP2 | -1.3913 | 0.000583  |
+| Scheme cite{han2017overcoming} | -1.3880 | 0.00155 |
+<a id=tab:sol10Dsimple> Estimate of $u(0,x_0)$ where $d$ $=$ $10$ and $x_0$ $=$ $\un_{10}$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $-1.383395$. </a>
+
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | 0.6760 | 0.00274  |
+| DBDP2 |0.67102 | 0.00559  |
+| Scheme cite{han2017overcoming} | 0.68686 | 0.002402  |
+<a id=tab:sol20D>
+
+Estimate of $u(0,x_0)$ where $d$ $=$ $20$ and $x_0$ $=$ $\un_{20}$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $0.6728135$. </a>
+
+ |
+| | Averaged value | Standard deviation  |
+| DBDP1 | 1.5903 | 0.006276  |
+| DBDP2 | 1.58762| 0.00679  |
+| Scheme cite{han2017overcoming} | 1.583023 | 0.0361  |
+<a id=tab:sol50D>
+
+Estimate of $u(0,x_0)$ where $d$ $=$ $50$ and $x_0$ $=$ $\un_{50}$.
+
+Average and standard deviation observed over 10 independent runs are reported.
+
+The theoretical solution is $1.5909$. </a>
+
+#
