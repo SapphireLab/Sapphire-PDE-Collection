@@ -96,3 +96,58 @@ We describe in Section [secalgo](#secalgo) our two numerical schemes and compare
 
 Section [secconv](#secconv) is devoted to the convergence analysis of our machine learning algorithms, and we present in Section [secnum](#secnum) several numerical tests.
 
+## 2·Neural networks as function approximators
+
+\label{secNN}
+
+Multilayer (also called deep) neural networks are designed to approximate unknown or large class of functions.
+
+In contrast to additive approximation theory with weighted sum over basis functions, e.g. polynomials, neural networks rely on the composition of simple functions, and appear to provide an efficient way to handle high-dimensional approximation problems, in particular thanks to the increase in computer power for finding the "optimal" parameters by (stochastic) gradient descent methods.
+
+We shall consider feedforward (or artificial) neural networks, which represent the basic type of deep neural networks.
+
+Let us recall some notation and basic definitions that will be useful in our context.
+
+We fix the input dimension $d_0$ $=$ $d$ (here the dimension of the state variable $x$), the output dimension $d_1$ (here $d_1$ $=$ $1$ for approximating the real-valued solution to the PDE, or $d_1$ $=$ $d$ for approximating the vector-valued gradient function), the global number $L+1$ $\in$ $\N\setminus\{1,2\}$ of layers with $m_\ell$, $\ell$ $=$ $0,\ldots,L$, the number of neurons (units or nodes) on each layer: the first layer is the input layer with $m_0$ $=$ $d$, the last layer is the output layer with $m_L$ $=$ $d_1$, and the $L-1$ layers between are called hidden layers, where we choose for simplicity the same dimension $m_\ell$ $=$ $m$, $\ell$ $=$ $1,\ldots,L-1$.
+
+A feedforward neural network is a function from $\R^{d}$ to $\R^{d_1}$ defined as the composition 
+
+$$
+\begin{aligned}
+\label{defNN} x \in \R^d & \longmapsto \; A_L \circ \varrho \circ A_{L - 1} \circ \ldots \circ \varrho \circ A_1(x) \; \in \; \R^{d_1}. 
+\end{aligned}
+$$
+
+Here $A_\ell$, $\ell$ $=$ $1,\ldots,L$ are affine transformations: $A_1$ maps from $\R^d$ to $\R^m$, $A_2,\ldots,A_{L-1}$ map from $\R^m$ to $\R^m$, and $A_L$ maps from $\R^m$ to $\R^{d_1}$, represented by 
+
+$$
+\begin{aligned}
+
+A_\ell (x) &= \; \Wc_\ell x + \beta_\ell, 
+\end{aligned}
+$$
+
+for a matrix $\Wc_\ell$ called weight, and a vector $\beta_\ell$ called bias term, $\varrho$ $:$ $\R$ $\rightarrow$ $\R$ is a nonlinear function, called activation function, and applied component-wise on the outputs of $A_\ell$, i.e., $\varrho(x_1,\ldots,x_m)$ $=$ $(\varrho(x_1),\ldots,\varrho(x_m))$.
+
+Standard examples of activation functions are the sigmoid, the ReLu, the Elu, $\tanh$.
+
+All these matrices $\Wc_\ell$ and vectors $\beta_\ell$, $\ell$ $=$ $1,\ldots,L$, are the parameters of the neural network, and can be identified with an element $\theta$ $\in$ $\R^{N_m}$, where $N_m$ $=$ $\sum_{\ell=0}^{L-1} m_\ell (1+m_{\ell+1})$ $=$ $d(1+m)+m(1+m)(L-2)+m(1+d_1)$ is the number of parameters, where we fix $d_0$, $d_1$, $L$, but allow growing number $m$ of hidden neurons.
+
+We denote by $\Theta_m$ the set of possible parameters: in the sequel, we shall consider either the case when there are no constraints on parameters, i.e., $\Theta_m$ $=$ $\R^{N_m}$, or when the total variation norm of the neural networks is smaller than $\gamma_m$, i.e., 
+
+$$
+\begin{aligned}
+\Theta_m & = \Theta_m^\gamma \; := \; \big\{ \theta = (\Wc_\ell,\beta_\ell)_\ell: |\Wc_l| \leq \gamma_m, \;\; \ell = 1,\ldots,L \big\}, \;\; \mbox{ with} \; \gamma_m \nearrow \infty, \mbox{ as } m \rightarrow \infty. 
+\end{aligned}
+$$
+
+We denote by $\Phi_{_m}(.;\theta)$ the neural network function defined in \eqref{defNN}, and by $\Nc\Nc_{d,d_1,L,m}^\varrho(\Theta_m)$ the set of all such neural networks $\Phi_{_m}(.;\theta)$ for $\theta$ $\in$ $\Theta_m$, and set 
+\begin{eqnarray*} \Nc\Nc_{d,d_1,L}^\varrho &= & \bigcup_{m \in \N} \Nc\Nc_{d,d_1,L,m}^\varrho(\Theta_m) \; = \; \bigcup_{m \in \N} \Nc\Nc_{d,d_1,L,m}^\varrho(\R^{N_m}), \end{eqnarray*}
+as the class of all neural networks within a fixed structure given by $d$, $d_1$, $L$ and $\varrho$.
+
+The fundamental result of Hornick et al. [^Horetal89] justifies the use of neural networks as function approximators: \vspace{1mm} \noindent {\bf Universal approximation theorem (I)}: $\Nc\Nc_{d,d_1,L}^\varrho$ is dense in $L^2(\nu)$ for any finite measure $\nu$ on $\R^d$, whenever $\varrho$ is continuous and non-constant. \vspace{1mm}
+
+Moreover, we have a universal approximation result for the derivatives in the case of a single hidden layer, i.e. $L$ $=$ $2$, and when the activation function is a smooth function, see [^Hor90universal]. \vspace{1mm} \noindent {\bf Universal approximation theorem (II)}: Assume that $\varrho$ is a (non constant) $C^k$ function.
+
+Then, $\Nc\Nc_{d,d_1,2}^\varrho$ approximates any function and its derivatives up to order $k$, arbitrary well on any compact set of $\R^d$.
+
