@@ -1394,4 +1394,18 @@ We renormalize the data before entering the network.
 
 We use Adam Optimizer, implemented in TensorFlow and mini-batch with $1000$ trajectories for the stochastic gradient descent. 
 
-#
+### PDEs with bounded solution and simple structure
+
+\label{sec:numeric1}
+
+We begin with a simple example in dimension one.
+
+It is not hard to find test cases where the scheme proposed in [^Han2017overcoming] fails even in dimension one.
+
+In fact the latter scheme works well for small maturities and with a starting point close to the solution.
+
+It is always interesting to start by testing schemes in dimension one as one can easily compare graphically the numerical results to the theoretical solution.
+
+Then we take some examples in higher dimensions and show that our method seems to work well when the dimension increases higher. 
+
+##
