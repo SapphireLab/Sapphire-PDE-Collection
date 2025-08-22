@@ -783,4 +783,240 @@ $$
 
 and using \eqref{estimVU}, \eqref{estimZhatZ}, we obtain after summation over $i$ $=$ $0,\ldots,N-1$, the required error estimate for the $Z$-component as in \eqref{estimYfin}, and this ends the proof. \ep 
 
+### Convergence of DBDP2
+
+We shall consider neural networks with one hidden layer, $m$ neurons with total variation smaller than $\gamma_m$ (see Section [secNN](#secNN)), a $C^3$ activation function $\varrho$ with linear growth condition, and bounded derivatives, e.g., a sigmoid activation function, or a $\tanh$ function: this class of neural networks is then represented by the parametric set of functions 
+
+$$
+\begin{aligned}
+\Nc\Nc_{d,1,2,m}^\varrho(\Theta_m^\gamma) &:= \left\{ x \in \R^d \mapsto \mathcal{U}(x;\theta) = \sum_{i=1}^{m} c_i \varrho(a_i.x+b_i) + b_0, \; \theta=(a_i,b_i,c_i,b_0)_{i=1}^m \; \in \; \Theta^\gamma_m \right\}, \nonumber 
+\end{aligned}
+$$
+
+with 
+
+$$
+\begin{aligned}
+\Theta^\gamma_m &:= \left\{ \theta=(a_i,b_i,c_i,b_0)_{i=1}^m: \; \max_{i=1,\ldots,m} |a_i| \leq \gamma_m, \; \sum_{i=1}^{m} |c_i| \leq \gamma_m \right\}, 
+\end{aligned}
+$$
+
+for some sequence $(\gamma_m)_m$ converging to $\infty$, as $m$ goes to infinity, and such that 
+
+$$
+\label{convgamma} 
+\begin{array}{cc} \frac{\gamma_{m}^6}{N} \xrightarrow[m,N \to \infty]{} 0. \end{array}
+
+$$
+
+Notice that the neural networks in $\Nc\Nc_{d,1,2,m}^\varrho(\Theta_m^\gamma)$ have their first, second and third derivatives uniformly bounded w.r.t. the state variable $x$.
+
+More precisely, there exists some constant $C$ depending only on $d$ and the derivatives of $\varrho$ s.t. for any $\Uc$ $\in$ $\Nc\Nc_{d,1,2,m}^\varrho(\Theta_m^\gamma)$, 
+
+$$
+\label{bounderivU} \left\{ 
+
+$$
+\begin{aligned}
+\sup_{x\in\R^d,\theta\in\Theta_m^\gamma} \Big| D_x \mathcal{U}(x;\theta) \Big| \; \leq \; C \gamma_{m}^2, \quad \sup_{x\in\R^d,\theta\in\Theta_m^\gamma} \Big| D_x^2 \mathcal{U}(x;\theta) \Big| \; \leq \; C \gamma_{m}^3, \\ \text{ and } \;\;\; \sup_{x\in\R^d,\theta\in\Theta_m^\gamma} \Big| D_x^3 \mathcal{U}(x;\theta) \Big| \; \leq \; C \gamma_{m}^4. 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+\vspace{1mm}
+
+Let us investigate the convergence of the scheme DBDP2 in \eqref{eq:scheme2} with neural networks in $\Nc\Nc_{d,1,2,m}^\varrho(\Theta_m^\gamma)$, and define for $i$ $=$ $0,\ldots,N-1$: 
+
+$$
+\label{defVCZ2} \left\{ 
+\begin{array}{rcl} \widehat\Vc_{t_i} & := & \E_i \big[ \widehat\Uc_{i+1}^{(2)}(X_{t_{i+1}}) \big] + f(t_i,X_{t_i},\widehat\Vc_{t_i},\overline{{\widehat Z_{t_i}}}) \Delta t_i \; = \; \hat v_i^{}(X_{t_i}), \\ \overline{{\widehat Z_{t_i}}} & := & \frac{1}{\Delta t_i} \E_i\left[ \widehat\Uc_{i+1}^{(2)}(X_{t_{i+1}}) \Delta W_{t_i} \right] \; = \; \overline{{\hat z_i}^{}}(X_{t_i}). \end{array}
+\right. 
+$$
+
+\vspace{1mm}
+
+A measure of the (squared) error for the DBDP2 scheme is defined similarly as in DBDP1 scheme: 
+
+$$
+\begin{aligned}
+\Ec\big[(\widehat\Uc^{(2)},\widehat\Zc^{(2)}),(Y,Z)\big] & := \; \max_{i=0,\ldots,N-1} \E \big|Y_{t_i}- \widehat\Uc_i^{(2)}(X_{t_i})\big|^2 + \E \bigg[ \sum_{i=0}^{N-1} \int_{t_i}^{t_{i+1}} \big| Z_t - \widehat\Zc_i^{(2)}(X_{t_i}) \big|^2 dt \bigg]. 
+\end{aligned}
+$$
+
+Our second main result gives an error estimate of the DBDP2 scheme in terms of the $L^2$-approximation errors of $\hat v_i$ and its derivative (which exists under assumption detailed below) by neural networks $\Uc_i$ $\in$ $\Nc\Nc_{d,1,2,m}^\varrho(\Theta_m^\gamma)$, $i=0,\ldots,N-1$, and defined as 
+
+$$
+\begin{aligned}
+\eps_i^{\Nc,m} \; := \; \inf_{\theta \in \Theta_m^\gamma}\Big\{ \E \big|\hat v_i(X_{t_i}) - \Uc_i(X_{t_i};\theta) \big|^2 + \Delta t_i \E \big| \sigma\trans(t_i,X_{t_i}) \big( D_x \hat v_i(X_{t_i}) - D_x \Uc_i(X_{t_i};\theta) \big) \big|^2 \Big\}, \nonumber 
+\end{aligned}
+$$
+
+which are expected to be small in view of the universal approximation theorem (II), see discussion in Remark [remNN_approxError](#remNN_approxError). \vspace{1mm}
+
+We also require the additional conditions on the coefficients: \vspace{2mm} \noindent {\bf (H2)} (i) The functions $x$ $\mapsto$ $\mu(t,.)$, $\sigma(t,.)$ are $C^1$ with bounded derivatives uniformly w.r.t. $(t,x)$ $\in$ $[0,T]\times\R^d$. \vspace{1mm} \noindent (ii) The function $(x,y,z)$ $\mapsto$ $f(t,.)$ is $C^1$ with bounded derivatives uniformly w.r.t. $(t,x,y,z)$ in $[0,T]\times \R^d\times\R\times\R^d$. \vspace{2mm} 
+\begin{Theorem} \label{theoconv2} \emph{(Consistency of DBDP2)} \label{theo:scheme2}
+
+Under {\bf (H1)}-{\bf (H2)}, there exists a constant $C>0$, independent of $\pi$, such that 
+
+$$
+\begin{aligned}
+\Ec\big[(\widehat\Uc^{(2)},\widehat\Zc^{(2)}),(Y,Z)\big] & \leq \; C \Big( \E \big|g(\Xc_{T}) - g(X_T) \big|^2 + \frac{\gamma_{m}^6}{N} + \eps^Z(\pi) + N \sum_{i=0}^{N-1} \eps_i^{\Nc,m} \Big). \label{eq:theo2_scheme2} 
+\end{aligned}
+$$
+
+\end{Theorem}
+\noindent {\bf Proof.}
+
+For simplicity of notations, we assume $d$ $=$ $1$, and only detail the arguments that differ from the proof of Theorem [eq:theo1_scheme1](#eq:theo1_scheme1).
+
+From \eqref{defVCZ2}, and the Euler scheme \eqref{eq:eulerSDE}, we have 
+
+$$
+\begin{aligned}
+\hat v_i(x) & = \; \tilde v_i(x) + \Delta t_i f(t_i,x,\hat v_i(x), \overline{{\hat z_i}}(x)), \;\;\; \tilde v_i(x) \; := \; \E\big[ \hat u_{i+1}(X_{t_{i+1}}^x) \big], \;\; x \in \R^d, \\ \overline{{\hat z_i}}(x) & = \; \frac{1}{\Delta t_i} \E \big[ \hat u_{i+1}(X_{t_{i+1}}^x) \Delta W_{t_i} \big], \;\;\; X_{t_{i+1}}^x \; = \; x + \mu(t_i,x) \Delta t_i + \sigma(t_i,x) \Delta W_{t_i}. 
+\end{aligned}
+$$
+
+Under assumption {\bf (H2)}(i), and recalling that $\hat u_{i+1}$ $=$ $\Uc_{i+1}(.;\theta_{i+1}^*)$ is $C^2$ with bounded derivatives, we see that $\tilde v_i$ is $C^1$ with 
+
+$$
+\begin{aligned}
+
+D_x \tilde v_i(x) & = \; \E \Big[ \big(1 + D_x \mu(t_i,x) \Delta t_i + D_x \sigma(t_i,x) \Delta W_{t_i} \big) D_x \hat u_{i+1}(X_{t_{i+1}}^x) \Big] \\ & = \; \E \big[ D_x \hat u_{i+1}(X_{t_{i+1}}^x) \big] + \Delta t_i \; R_i(x) \label{derivtildev} \\ R_i(x) & := \; D_x \mu(t_i,x) \E \big[ D_x \hat u_{i+1}(X_{t_{i+1}}^x) \big] + \sigma(t_i,x) D_x \sigma(t_i,x) \E \big[ D_x^2 \hat u_{i+1}(X_{t_{i+1}}^x) \big], 
+\end{aligned}
+$$
+
+where we use integration by parts in the second equality.
+
+Similarly, we have 
+
+$$
+\left\{ 
+
+$$
+\begin{aligned}
+\overline{{\hat z_i}}(x) & = \; \sigma(t_i,x)\E\big[ D_x \hat u_{i+1}(X_{t_{i+1}}^x) \big], \label{IPPZ} \\ D_x \overline{{\hat z_i}}(x) & = \; D_x \sigma(t_i,x)\E\big[ D_x \hat u_{i+1}(X_{t_{i+1}}^x) \big] + \sigma(t_i,x)\E\big[ D_x^2 \hat u_{i+1}(X_{t_{i+1}}^x) \big] + \Delta t_i \; \sigma(t_i,x) G_i(x) \\ G_i(x) & := \; D_x \mu(t_i,x) \E \big[ D_x^2 \hat u_{i+1}(X_{t_{i+1}}^x) \big] + \sigma(t_i,x) D_x \sigma(t_i,x) \E \big[ D_x^3 \hat u_{i+1}(X_{t_{i+1}}^x) \big]. 
+\end{aligned}
+$$
+
+\right. 
+$$
+
+Denoting by $\hat f_i(x)$ $=$ $f(t_i,x,\hat v_i(x), \overline{{\hat z_i}}(x))$, it follows by the implicit function theorem, and for $|\pi|$ small enough, that $\hat v_i$ is $C^1$ with derivative given by 
+
+$$
+\begin{aligned}
+
+D_x \hat v_i(x) & = \; D_x \tilde v_i(x) + \Delta t_i \Big( D_x \hat f_i(x) + D_y \hat f_i(x) D_x \hat v_i(x) + D_z \hat f_i(x) D_x \overline{{\hat z_i}}(x) \Big) 
+\end{aligned}
+$$
+
+and thus by \eqref{derivtildev}-\eqref{IPPZ} 
+
+$$
+\begin{aligned}
+\big( 1 - \Delta t_i D_y \hat f_i(x) \big) \sigma(t_i,x) D_x \hat v_i(x) & = \; \overline{{\hat z_i}}(x) + \Delta t_i \sigma(t_i,x) \Big( R_i(x) + D_x \hat f_i(x) + D_z \hat f_i(x) D_x \overline{{\hat z_i}}(x) \Big). 
+\end{aligned}
+$$
+
+Under {\bf (H2)}, by the linear growth condition on $\sigma$, and using the bounds on the derivatives of the neural networks in $\Nc\Nc_{d,1,2,m}^\varrho(\Theta_m^\gamma)$ in \eqref{bounderivU}, we then have 
+
+$$
+\begin{aligned}
+\label{interzv} \E \Big| \sigma(t_i,X_{t_i}) D_x \hat v_i(X_{t_i}) - \overline{{\widehat Z_{t_i}}} \Big|^2 & \leq \; C( \gamma_{m}^6 + |\pi|^2 \gamma_{m}^8) |\pi|^2. 
+\end{aligned}
+$$
+
+Next, by the same arguments as in Steps 3 and 4 in the proof of Theorem [theo:scheme1_1](#theo:scheme1_1) (see in particular \eqref{estimVU}), we have for $|\pi|$ small enough, 
+
+$$
+\begin{aligned}
+\E \big| \widehat\Vc_{t_i} - \widehat\Uc_i^{(2)}(X_{t_i}) \big|^2 + \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \widehat\Zc_i^{(2)}(X_{t_i}) \big|^2 \\ & \hspace{-5cm}\leq C \E\big[ \big|\hat v_i(X_{t_i}) - \Uc_i(X_{t_i};\theta) \big|^2 \big] + C \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \sigma(t_i,X_{t_i}) \hat D_x \Uc_i(X_{t_i};\theta) \big|^2, 
+\end{aligned}
+$$
+
+for all $\theta$ $\in$ $\Theta^N$, and then with \eqref{interzv}, and by definition of $\eps_i^{NN,v,2}$: 
+
+$$
+\begin{aligned}
+\label{estimU2} \E \big| \widehat\Vc_{t_i} - \widehat\Uc_i^{(2)}(X_{t_i}) \big|^2 + \Delta t_i \E \big| \overline{{\widehat Z_{t_i}}} - \widehat\Zc_i^{(2)}(X_{t_i}) \big|^2 & \leq \; C \eps_i^{NN,v,2} + C ( \gamma_{m}^6 + |\pi|^2 \gamma_{m}^8) |\pi|^3. 
+\end{aligned}
+$$
+
+On the other hand, by the same arguments as in Steps 1 and 2 in the proof of Theorem [theo:scheme1_1](#theo:scheme1_1) (see in particular \eqref{estimYinter}), we have 
+
+$$
+\begin{aligned}
+\max_{i=0,\ldots,N-1} \E\big| Y_{t_i} - \widehat\Uc_{i}^{(2)}(X_{t_{i}}) \big|^2 & \leq \; C \E \big|g(\Xc_{T}) - g(X_T) \big|^2 + C |\pi| + C \eps^Z(\pi) \\ & \hspace{6mm} + \; C N \sum_{i=0}^{N-1} \E \big| \widehat\Vc_{t_i} - \widehat\Uc_{i}^{(2)}(X_{t_{i}}) \big|^2. 
+\end{aligned}
+$$
+
+Plugging \eqref{estimU2} into this last inequality, together with \eqref{convgamma}, gives the required estimation \eqref{eq:theo2_scheme2} for the $Y$-component.
+
+Finally, by following the same arguments as in Step 5 in the proof of \eqref{theo:scheme1_1}, we obtain the estimation \eqref{eq:theo2_scheme2} for the $Z$-component. \ep \vspace{3mm} 
+\begin{Remark} \label{remNN_approxError} {\rm The universal approximation theorem (II) [^Hor90universal] is valid on compact sets, and one cannot conclude {\it a priori} that the error of network approximation $\eps_i^{\Nc,m}$ converge to zero as $m$ goes to infinity.
+
+Instead, we have to proceed into two steps: 
+
+- [(i)] Localize the error by considering 
+
+$$
+\begin{aligned}
+\eps_i^{\Nc,m,K} & := \; \inf_{\theta\in\Theta_m^{\gamma}} \E \big[ \Delta_i(X_{t_i};\theta) 1_{|X_{t_i}| \leq K} \big], 
+\end{aligned}
+$$
+
+where we set $\Delta_i(x;\theta)$ $:=$ $|\hat v_i(x)-\Uc_i(x;\theta)|^2$ + $\Delta t_i \big|\sigma\trans(t_i,x) \big( D_x \hat v_i(x) - D_x \Uc_i(x;\theta) \big) \big|^2$. 
+- [(ii)] Consider an increasing family of neural networks $\Theta_m^{\gamma^{N-1}}$ $\subset$ $\ldots$ $\subset$ $\Theta_m^{\gamma^{i}}$ $\subset$ $\ldots$ $\subset$ $\Theta_m^{\gamma^0}$ on which to minimize the approximation errors by backward induction at times $t_i$, $i$ $=$ $N-1,\ldots,0$, and where, $\gamma_m^i$ is defined by $$ \gamma^i_m:=\gamma_{\varphi^{N-1-i}(m)}, $$ with $\varphi: \mathbb{N} \to \mathbb{N}$ an increasing function, and where we use the notation $\varphi^k:=\varphi \circ ... \circ \varphi$ (composition $k$ times).
+
+The localized approximation error at time $t_i$, for $0\leq i \leq N-1$, should then be rewritten as 
+
+$$
+\begin{aligned}
+\eps_{i,N}^{\Nc,m,K} & := \; \inf_{\theta\in\Theta_m^{\gamma^i}} \E \big[ \Delta_i(X_{t_i};\theta) 1_{|X_{t_i}| \leq K} \big], \nonumber 
+\end{aligned}
+$$
+
+and the non-localized one as 
+
+$$
+\begin{aligned}
+\eps_{i,N}^{\Nc,m} & := \; \inf_{\theta\in\Theta_m^{\gamma^i}} \E \big[ \Delta_i(X_{t_i};\theta)\big]. \nonumber 
+\end{aligned}
+$$
+
+Note that $\eps_{i,N}^{\Nc,m,K}$ converges to zero, as $m$ goes to infinity, for any $K$ $>$ $0$, as claimed by the universal approximation theorem (II) [^Hor90universal].
+
+On the other hand, from the expressions of $\hat v_i$, $D_x\hat v_i$ in the above proof of Theorem [theoconv2](#theoconv2), we see under {\bf (H1)}-{\bf (H2)}, and from \eqref{bounderivU} that for all $x$ $\in$ $\R^d$, $\theta$ $\in$ $\Theta_m^{\gamma^i}$, $i$ $=$ $0,\ldots,N-1$: 
+
+$$
+\begin{aligned}
+|\Delta_i(x;\theta)| & \leq \; C(1 +|x|^2)\gamma_{\varphi^{N-1}(m)}^4, 
+\end{aligned}
+$$
+
+for some positive constant $C$ independent of $m,\pi$.
+
+We deduce by Cauchy-Schwarz and Chebyshev's inequalities that for all $K$ $>$ $0$, and $\theta$ $\in$ $\Theta_m^{\gamma^i}$, $i$ $=$ $0,\ldots,N-1$, 
+
+$$
+\begin{aligned}
+\label{deltainter} \E \big[ \Delta_i(X_{t_i};\theta) 1_{|X_{t_i}| > K} \big] & \leq \; \Big\|\Delta_i(X_{t_i};\theta) \Big\|_{_2} \frac{\big\| X_{t_i} \big\|_{_2}}{K} \; \leq C(1 +|x_0|^3)\frac{\gamma_{\varphi^{N-1}(m)}^4}{K}, 
+\end{aligned}
+$$
+
+where we used \eqref{integX} in the last inequality.
+
+This shows that 
+
+$$
+\begin{aligned}
+\eps_{i,N}^{\Nc,m} & \leq \; \eps_{i,N}^{\Nc,m,K} + C \frac{\gamma_{\varphi^{N-1}(m)}^4}{K}, \;\;\; \forall K > 0, 
+\end{aligned}
+$$
+
+and thus, in theory, the error $\eps_{i,N}^{\Nc,m}$ can be made arbitrary small by suitable choices of large $m$ and $K$. \ep } \end{Remark}
+
 #
