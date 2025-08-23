@@ -1,4 +1,4 @@
-# [DeepMVBSDE](../../docs/FBSDE/Han2022DeepMVBSDE.md)
+# [DeepMVBSDE](../FBSDE/2022.04.25_Han2022DeepMVBSDE.md)
 
 ## 问题描述
 
@@ -502,4 +502,4 @@ $$
 \end{cases}
 $$
 
-[^Germain2019Numerical]: [Numerical Resolution of McKean-Vlasov FBSDEs Using Neural Networks.](../../docs/FBSDE/Germain2019Numerical.md)
+[^Germain2019Numerical]: [Numerical Resolution of McKean-Vlasov FBSDEs Using Neural Networks.](../FBSDE/2019.09.27_Germain2019Numerical.md)
